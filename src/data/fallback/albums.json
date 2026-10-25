@@ -1,0 +1,62 @@
+[
+  {
+    "id": "why-to-sing-beautifully",
+    "title": "Why to Sing Beautifully?",
+    "price": 9.99,
+    "cover": "https://f4.bcbits.com/img/a4169686274_2.jpg",
+    "streamUrl": "https://saturnalia999.bandcamp.com/album/why-to-sing-beautifully",
+    "audioUrl": "",
+    "bandcampEmbedId": "4169686274",
+    "order": 1
+  },
+  {
+    "id": "can-you-be-honest-for-once-deluxe",
+    "title": "Can You Be Honest For Once? [Deluxe]",
+    "price": 12.99,
+    "cover": "https://f4.bcbits.com/img/a3863320402_2.jpg",
+    "streamUrl": "https://saturnalia999.bandcamp.com/album/can-you-be-honest-for-once-deluxe-edition",
+    "audioUrl": "",
+    "bandcampEmbedId": "3863320402",
+    "order": 2
+  },
+  {
+    "id": "can-you-be-honest-for-once",
+    "title": "Can You Be Honest for Once?",
+    "price": 9.99,
+    "cover": "https://f4.bcbits.com/img/a1629141684_2.jpg",
+    "streamUrl": "https://saturnalia999.bandcamp.com/album/can-you-be-honest-for-once",
+    "audioUrl": "",
+    "bandcampEmbedId": "1629141684",
+    "order": 3
+  },
+  {
+    "id": "why-to-live-for-a-dream",
+    "title": "Why to Live for a Dream?",
+    "price": 9.99,
+    "cover": "https://f4.bcbits.com/img/a0445278854_2.jpg",
+    "streamUrl": "https://saturnalia999.bandcamp.com/album/why-to-live-for-a-dream-deluxe-edition",
+    "audioUrl": "",
+    "bandcampEmbedId": "0445278854",
+    "order": 4
+  },
+  {
+    "id": "young-blood",
+    "title": "Young Blood",
+    "price": 2.99,
+    "cover": "https://f4.bcbits.com/img/a2382582916_2.jpg",
+    "streamUrl": "https://saturnalia999.bandcamp.com/track/young-blood",
+    "audioUrl": "",
+    "bandcampEmbedId": "2382582916",
+    "order": 5
+  },
+  {
+    "id": "mechanic-angel",
+    "title": "Mechanic Angel",
+    "price": 2.99,
+    "cover": "https://f4.bcbits.com/img/a3999687054_2.jpg",
+    "streamUrl": "https://saturnalia999.bandcamp.com/track/mechanic-angel",
+    "audioUrl": "",
+    "bandcampEmbedId": "3999687054",
+    "order": 6
+  }
+]

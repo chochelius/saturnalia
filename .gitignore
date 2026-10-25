@@ -1,0 +1,39 @@
+# Dependencias
+node_modules/
+.pnp
+.pnp.js
+
+# Build y salidas de Astro
+dist/
+.astro/
+
+# PocketBase local / datos de la base de datos
+pb_data/
+pocketbase
+pocketbase.exe
+
+# Respaldos y volcados offline
+bandcamp/
+*.tar.gz
+*.zip
+
+# Entorno y variables secretas
+.env
+.env.production
+.env.local
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Logs de depuración
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

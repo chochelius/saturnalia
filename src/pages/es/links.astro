@@ -1,0 +1,141 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getLinks, getSocials } from '../../lib/pocketbase';
+import { GlitchText } from '../../components/GlitchText';
+import { SpotifyIcon } from '../../components/icons/SpotifyIcon';
+import { YouTubeIcon } from '../../components/icons/YouTubeIcon';
+import { BandcampIcon } from '../../components/icons/BandcampIcon';
+import { InstagramIcon } from '../../components/icons/InstagramIcon';
+import { Disc3, Globe, ExternalLink, Sparkles, Languages } from 'lucide-react';
+
+const links = await getLinks();
+const socials = await getSocials();
+---
+
+<Layout
+  title="Saturnalia999 — Enlaces y Transmisiones"
+  description="Transmisiones oficiales, enlaces a streaming, videos musicales y plataformas de Saturnalia999."
+  lang="es"
+>
+  <main class="min-h-screen flex flex-col items-center justify-between px-4 py-12 relative overflow-hidden">
+    {/* Contenedor central vertical estilo Linktree */}
+    <div class="w-full max-w-md mx-auto flex flex-col items-center z-10">
+      
+      {/* Botón de cambio de idioma arriba a la derecha */}
+      <div class="w-full flex justify-end mb-6">
+        <a
+          href="/links"
+          class="flex items-center gap-1.5 px-3 py-1 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase text-xs transition-colors duration-200"
+        >
+          <Languages className="w-3.5 h-3.5" />
+          <span>English (EN)</span>
+        </a>
+      </div>
+
+      {/* Avatar / Sigil de la artista */}
+      <div class="relative w-28 h-28 mb-5 rounded-full overflow-hidden border-2 border-primary shadow-lg shadow-primary/30 p-1 bg-black">
+        <img
+          src="https://f4.bcbits.com/img/a4169686274_2.jpg"
+          alt="Saturnalia999"
+          class="w-full h-full object-cover rounded-full filter contrast-125"
+        />
+      </div>
+
+      {/* Identidad */}
+      <GlitchText
+        text="SATURNALIA999"
+        as="h1"
+        className="text-3xl font-bold font-headline tracking-widest text-glow text-primary uppercase text-center"
+      />
+      <p class="text-xs font-cover text-ghost-glow tracking-widest uppercase mt-2 mb-8 text-center max-w-xs">
+        Acto Experimental Gótico · Chile
+      </p>
+
+      {/* Lista de enlaces rápidos */}
+      <div class="w-full space-y-3.5">
+        {links.map((link) => {
+          const isFeatured = link.category === 'featured';
+          const linkTitle = link.titleEs || link.title;
+          const targetUrl = link.url === '/' ? '/es' : link.url;
+          return (
+            <a
+              href={targetUrl}
+              target={targetUrl.startsWith('http') ? '_blank' : '_self'}
+              rel={targetUrl.startsWith('http') ? 'noopener noreferrer' : ''}
+              class={`group relative flex items-center justify-between w-full px-5 py-3.5 border transition-all duration-300 rounded-none bg-[#020202]/90 backdrop-blur-md ${
+                isFeatured
+                  ? 'border-accent shadow-md shadow-accent/20 hover:bg-accent/10'
+                  : 'border-primary/40 hover:border-primary hover:bg-primary/10 shadow-sm shadow-primary/10'
+              }`}
+            >
+              <div class="flex items-center gap-3">
+                {link.icon === 'spotify' && (
+                  <SpotifyIcon className="w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                )}
+                {link.icon === 'youtube' && (
+                  <YouTubeIcon className="w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                )}
+                {link.icon === 'bandcamp' && (
+                  <BandcampIcon className="w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                )}
+                {link.icon === 'instagram' && (
+                  <InstagramIcon className="w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                )}
+                {link.icon === 'globe' && (
+                  <Globe className="w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                )}
+                {isFeatured && !['spotify', 'youtube', 'bandcamp', 'instagram', 'globe'].includes(link.icon || '') && (
+                  <Sparkles className="w-5 h-5 text-accent animate-pulse" />
+                )}
+                <span class="font-headline tracking-wider uppercase text-sm text-foreground group-hover:text-glow transition-all">
+                  {linkTitle}
+                </span>
+              </div>
+              <ExternalLink className="w-4 h-4 text-primary/60 group-hover:text-primary transition-colors flex-shrink-0" />
+            </a>
+          );
+        })}
+      </div>
+
+      {/* Iconos de Redes Sociales inferiores */}
+      <div class="flex items-center justify-center gap-5 mt-8 py-3 border-t border-b border-primary/20 w-full">
+        {socials.spotify && (
+          <a href={socials.spotify} target="_blank" rel="noopener noreferrer" aria-label="Spotify">
+            <SpotifyIcon className="w-6 h-6 text-primary hover:text-accent transition-colors icon-glow" />
+          </a>
+        )}
+        {socials.youtube && (
+          <a href={socials.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <YouTubeIcon className="w-6 h-6 text-primary hover:text-accent transition-colors icon-glow" />
+          </a>
+        )}
+        {socials.bandcamp && (
+          <a href={socials.bandcamp} target="_blank" rel="noopener noreferrer" aria-label="Bandcamp">
+            <BandcampIcon className="w-6 h-6 text-primary hover:text-accent transition-colors icon-glow" />
+          </a>
+        )}
+        {socials.instagram && (
+          <a href={socials.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <InstagramIcon className="w-6 h-6 text-primary hover:text-accent transition-colors icon-glow" />
+          </a>
+        )}
+      </div>
+
+      {/* Retorno al sitio principal */}
+      <div class="mt-6 text-center">
+        <a
+          href="/es"
+          class="text-xs font-headline uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5"
+        >
+          <Disc3 className="w-3.5 h-3.5 text-primary" />
+          <span>Entrar a la Transmisión Completa</span>
+        </a>
+      </div>
+    </div>
+
+    {/* Pie de página discreto */}
+    <footer class="mt-8 text-center text-[11px] font-cover text-ghost-glow opacity-60 z-10">
+      &copy; {new Date().getFullYear()} Saturnalia999. Todos los derechos reservados.
+    </footer>
+  </main>
+</Layout>

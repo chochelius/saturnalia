@@ -1,0 +1,46 @@
+---
+import { SpotifyIcon } from "../icons/SpotifyIcon";
+import { YouTubeIcon } from "../icons/YouTubeIcon";
+import { BandcampIcon } from "../icons/BandcampIcon";
+import { InstagramIcon } from "../icons/InstagramIcon";
+import { Separator } from "../ui/separator";
+
+interface Props {
+  spotifyUrl?: string;
+  youtubeUrl?: string;
+  bandcampUrl?: string;
+  instagramUrl?: string;
+}
+
+const {
+  spotifyUrl = "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4",
+  youtubeUrl = "https://www.youtube.com/@saturnaliainfinita999",
+  bandcampUrl = "https://saturnalia999.bandcamp.com/releases",
+  instagramUrl = "https://www.instagram.com/saturnalia999999999",
+} = Astro.props;
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="w-full mt-24 bg-[#020202]/90 backdrop-blur-md">
+  <Separator className="bg-primary/20" />
+  <div class="container mx-auto py-8 px-4 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+    <p class="text-sm text-muted-foreground uppercase tracking-wider mb-4 md:mb-0 font-headline">
+      &copy; {currentYear} Saturnalia999. All rights reserved.
+    </p>
+    <div class="flex items-center space-x-5">
+      <a href={spotifyUrl} aria-label="Spotify" target="_blank" rel="noopener noreferrer" title="Spotify">
+        <SpotifyIcon className="w-6 h-6 text-primary hover:text-accent transition-colors" />
+      </a>
+      <a href={youtubeUrl} aria-label="YouTube" target="_blank" rel="noopener noreferrer" title="YouTube">
+        <YouTubeIcon className="w-6 h-6 text-primary hover:text-accent transition-colors" />
+      </a>
+      <a href={bandcampUrl} aria-label="Bandcamp" target="_blank" rel="noopener noreferrer" title="Bandcamp">
+        <BandcampIcon className="w-6 h-6 text-primary hover:text-accent transition-colors" />
+      </a>
+      <a href={instagramUrl} aria-label="Instagram" target="_blank" rel="noopener noreferrer" title="Instagram">
+        <InstagramIcon className="w-6 h-6 text-primary hover:text-accent transition-colors" />
+      </a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,29 @@
+---
+import { GlitchText } from "../GlitchText";
+import { Separator } from "../ui/separator";
+
+interface Props {
+  title: string;
+  paragraphs: string[];
+}
+
+const { title, paragraphs } = Astro.props;
+---
+
+<section id="bio" class="py-20 sm:py-32 bg-[#020202]/85 backdrop-blur-sm border-y border-primary/20">
+  <div class="container mx-auto px-4 text-center">
+    <GlitchText
+      text={title}
+      as="h2"
+      className="text-4xl md:text-5xl font-bold mb-8 text-glow text-primary"
+    />
+    <Separator className="w-24 mx-auto bg-primary mb-8" />
+    <div class="max-w-3xl mx-auto space-y-6">
+      {paragraphs.map((paragraph) => (
+        <p class="text-xl text-primary/80 leading-relaxed tracking-wider font-sans">
+          {paragraph}
+        </p>
+      ))}
+    </div>
+  </div>
+</section>

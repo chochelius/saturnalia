@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+import AmbientWebs from '../components/ui/AmbientWebs.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: string;
+}
+
+const {
+  title = "Saturnalia999 - Official Transmission",
+  description = "Official website of Saturnalia999, gothic solo experimental artist based in Chile. Music, discography, signal and contact.",
+  lang = "en",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang} class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    {/* Open Graph / Social */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="https://f4.bcbits.com/img/a4169686274_2.jpg" />
+
+    {/* Twitter */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://f4.bcbits.com/img/a4169686274_2.jpg" />
+
+    {/* Preload local Courier Prime font for instant rendering and 0 layout shift */}
+    <link
+      rel="preload"
+      href="/fonts/courier-prime-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    {/* Optimized Google Fonts (Single preconnect and link) */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Special+Elite&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-[#020202] text-foreground relative min-h-screen">
+    <AmbientWebs />
+    <slot />
+  </body>
+</html>

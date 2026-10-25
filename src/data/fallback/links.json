@@ -1,0 +1,56 @@
+[
+  {
+    "id": "latest-release",
+    "title": "DOUBLE FACED (Official Music Video)",
+    "titleEs": "DOUBLE FACED (Video Musical Oficial)",
+    "url": "https://www.youtube.com/watch?v=MJo7EKyST6U",
+    "category": "featured",
+    "icon": "youtube",
+    "order": 1
+  },
+  {
+    "id": "bandcamp",
+    "title": "Bandcamp (Discography & Merch)",
+    "titleEs": "Bandcamp (Discografía y Merchandising)",
+    "url": "https://saturnalia999.bandcamp.com/releases",
+    "category": "music",
+    "icon": "bandcamp",
+    "order": 2
+  },
+  {
+    "id": "spotify",
+    "title": "Spotify",
+    "titleEs": "Spotify",
+    "url": "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4",
+    "category": "music",
+    "icon": "spotify",
+    "order": 3
+  },
+  {
+    "id": "youtube",
+    "title": "YouTube Channel",
+    "titleEs": "Canal de YouTube",
+    "url": "https://www.youtube.com/@saturnaliainfinita999",
+    "category": "video",
+    "icon": "youtube",
+    "order": 4
+  },
+  {
+    "id": "instagram",
+    "title": "Instagram (@saturnalia999999999)",
+    "titleEs": "Instagram (@saturnalia999999999)",
+    "url": "https://www.instagram.com/saturnalia999999999",
+    "category": "social",
+    "icon": "instagram",
+    "order": 5
+  },
+  {
+    "id": "official-website",
+    "title": "Official Transmission (Full Website)",
+    "titleEs": "Transmisión Oficial (Sitio Web)",
+    "url": "/",
+    "category": "site",
+    "icon": "globe",
+    "order": 6
+  }
+]

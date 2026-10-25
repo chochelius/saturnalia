@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Courier Prime';
+  src: url('/fonts/courier-prime-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Courier Prime';
+  src: url('/fonts/courier-prime-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --font-headline: 'Oswald', sans-serif;
+    --font-body: 'Special Elite', cursive, sans-serif;
+    --font-cover: 'Courier Prime', 'Courier New', Courier, monospace;
+    --background: 200 20% 1%;      /* #020202 pitch black */
+    --foreground: 200 80% 48%;     /* #0c81bd main text blue */
+    --card: 200 20% 2%;            /* #020202 */
+    --card-foreground: 200 80% 48%;
+    --popover: 200 20% 1%;
+    --popover-foreground: 200 80% 48%;
+    --primary: 200 80% 50%;        /* #1ca1e5 cyan blue */
+    --primary-foreground: 0 0% 0%;
+    --secondary: 201 72% 21%;      /* #0f415b slate-blue */
+    --secondary-foreground: 200 80% 90%;
+    --muted: 201 50% 12%;
+    --muted-foreground: 206 62% 47%;/* #2e82c1 */
+    --accent: 205 100% 60%;        /* #33aaff bright blue */
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 205 81% 44%;         /* #157fc9 */
+    --input: 205 81% 44%;
+    --ring: 200 80% 50%;
+    --radius: 0rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #020202;
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary) / 0.6);
+  }
+  .icon-glow {
+    filter: drop-shadow(0 0 8px hsl(var(--primary)));
+  }
+
+  /* Resplandor espectral idéntico a las portadas: blanco etéreo con aura tenue fría */
+  .text-ghost-glow {
+    text-shadow: 
+      0 0 6px rgba(255, 255, 255, 0.85),
+      0 0 14px rgba(255, 255, 255, 0.5),
+      0 0 24px rgba(103, 205, 247, 0.35);
+  }
+
+  .text-cover-title {
+    font-family: var(--font-cover);
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .text-cover-artist {
+    font-family: var(--font-cover);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+  }
+}

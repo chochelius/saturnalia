@@ -1,0 +1,142 @@
+---
+// AmbientWebs.astro: Minimalist, architectural vector spiderweb corners
+---
+
+<div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none" aria-hidden="true">
+  {/* Top Left Spiderweb Anchor */}
+  <svg
+    class="absolute top-0 left-0 w-[420px] h-[420px] sm:w-[560px] sm:h-[560px] lg:w-[680px] lg:h-[680px] opacity-75"
+    viewBox="0 0 700 700"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      {/* Radial fade mask to dissolve the web seamlessly into #020202 */}
+      <radialGradient id="fade-tl" cx="0%" cy="0%" r="90%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+        <stop offset="55%" stop-color="#ffffff" stop-opacity="0.8" />
+        <stop offset="85%" stop-color="#ffffff" stop-opacity="0.2" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+      </radialGradient>
+      
+      {/* Cyan-Silver Cold Spectral Gradient */}
+      <linearGradient id="web-gradient-tl" x1="0" y1="0" x2="600" y2="600" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22" />
+        <stop offset="40%" stop-color="#67cdf7" stop-opacity="0.14" />
+        <stop offset="80%" stop-color="#1ca1e5" stop-opacity="0.06" />
+        <stop offset="100%" stop-color="#020202" stop-opacity="0" />
+      </linearGradient>
+
+      <mask id="mask-tl">
+        <rect width="700" height="700" fill="url(#fade-tl)" />
+      </mask>
+    </defs>
+
+    <g mask="url(#mask-tl)" stroke="url(#web-gradient-tl)">
+      {/* Radial Web Spine Rays */}
+      <line x1="0" y1="0" x2="680" y2="40" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="650" y2="130" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="600" y2="230" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="520" y2="340" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="420" y2="440" stroke-width="0.85" />
+      <line x1="0" y1="0" x2="310" y2="530" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="200" y2="610" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="100" y2="660" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="25" y2="690" stroke-width="0.75" />
+
+      {/* Ring 1 - Inner Core */}
+      <path d="M 50 3 Q 48 10 47 11 Q 44 17 42 19 Q 37 25 35 28 Q 28 35 25 37 Q 19 42 17 44 Q 11 47 10 48 Q 3 50 0 50" stroke-width="0.5" fill="none" />
+
+      {/* Ring 2 */}
+      <path d="M 100 6 Q 96 20 94 22 Q 88 34 84 38 Q 74 50 70 56 Q 56 70 50 74 Q 38 84 34 88 Q 22 94 20 96 Q 6 100 0 100" stroke-width="0.5" fill="none" />
+
+      {/* Ring 3 */}
+      <path d="M 160 10 Q 153 32 150 35 Q 140 55 134 61 Q 118 80 112 90 Q 90 112 80 118 Q 61 134 55 140 Q 35 150 32 153 Q 10 160 0 160" stroke-width="0.6" fill="none" />
+
+      {/* Ring 4 */}
+      <path d="M 230 14 Q 220 46 215 50 Q 201 79 193 88 Q 170 115 161 129 Q 129 161 115 170 Q 88 193 79 201 Q 50 215 46 220 Q 14 230 0 230" stroke-width="0.65" fill="none" />
+
+      {/* Ring 5 */}
+      <path d="M 310 18 Q 296 62 290 68 Q 271 107 260 118 Q 229 155 217 174 Q 174 217 155 229 Q 118 260 107 271 Q 68 290 62 296 Q 18 310 0 310" stroke-width="0.75" fill="none" />
+
+      {/* Ring 6 */}
+      <path d="M 400 24 Q 382 80 374 88 Q 350 138 335 152 Q 295 200 280 225 Q 225 280 200 295 Q 152 335 138 350 Q 88 374 80 382 Q 24 400 0 400" stroke-width="0.8" fill="none" />
+
+      {/* Ring 7 */}
+      <path d="M 500 30 Q 478 100 468 110 Q 437 172 419 190 Q 369 250 350 281 Q 281 350 250 369 Q 190 419 172 437 Q 110 468 100 478 Q 30 500 0 500" stroke-width="0.85" fill="none" />
+
+      {/* Ring 8 */}
+      <path d="M 610 36 Q 583 122 571 134 Q 533 210 511 232 Q 450 305 427 343 Q 343 427 305 450 Q 232 511 210 533 Q 134 571 122 583 Q 36 610 0 610" stroke-width="0.9" fill="none" />
+      
+      {/* Gossamer droplet points on intersections */}
+      <circle cx="217" cy="174" r="1.5" fill="#67cdf7" opacity="0.6" />
+      <circle cx="174" cy="217" r="1.5" fill="#67cdf7" opacity="0.6" />
+      <circle cx="280" cy="225" r="1.8" fill="#ffffff" opacity="0.7" />
+      <circle cx="225" cy="280" r="1.8" fill="#ffffff" opacity="0.7" />
+      <circle cx="350" cy="281" r="2" fill="#67cdf7" opacity="0.7" />
+      <circle cx="281" cy="350" r="2" fill="#67cdf7" opacity="0.7" />
+    </g>
+  </svg>
+
+  {/* Top Right Spiderweb Anchor (Mirrored & Subtle) */}
+  <svg
+    class="absolute top-0 right-0 w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] lg:w-[580px] lg:h-[580px] opacity-60 transform scale-x-[-1]"
+    viewBox="0 0 700 700"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <radialGradient id="fade-tr" cx="0%" cy="0%" r="90%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+        <stop offset="50%" stop-color="#ffffff" stop-opacity="0.75" />
+        <stop offset="80%" stop-color="#ffffff" stop-opacity="0.15" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+      </radialGradient>
+      
+      <linearGradient id="web-gradient-tr" x1="0" y1="0" x2="600" y2="600" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2" />
+        <stop offset="45%" stop-color="#67cdf7" stop-opacity="0.12" />
+        <stop offset="85%" stop-color="#0f415b" stop-opacity="0.05" />
+        <stop offset="100%" stop-color="#020202" stop-opacity="0" />
+      </linearGradient>
+
+      <mask id="mask-tr">
+        <rect width="700" height="700" fill="url(#fade-tr)" />
+      </mask>
+    </defs>
+
+    <g mask="url(#mask-tr)" stroke="url(#web-gradient-tr)">
+      <line x1="0" y1="0" x2="680" y2="40" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="650" y2="130" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="600" y2="230" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="520" y2="340" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="420" y2="440" stroke-width="0.85" />
+      <line x1="0" y1="0" x2="310" y2="530" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="200" y2="610" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="100" y2="660" stroke-width="0.75" />
+      <line x1="0" y1="0" x2="25" y2="690" stroke-width="0.75" />
+
+      <path d="M 50 3 Q 48 10 47 11 Q 44 17 42 19 Q 37 25 35 28 Q 28 35 25 37 Q 19 42 17 44 Q 11 47 10 48 Q 3 50 0 50" stroke-width="0.5" fill="none" />
+      <path d="M 100 6 Q 96 20 94 22 Q 88 34 84 38 Q 74 50 70 56 Q 56 70 50 74 Q 38 84 34 88 Q 22 94 20 96 Q 6 100 0 100" stroke-width="0.5" fill="none" />
+      <path d="M 160 10 Q 153 32 150 35 Q 140 55 134 61 Q 118 80 112 90 Q 90 112 80 118 Q 61 134 55 140 Q 35 150 32 153 Q 10 160 0 160" stroke-width="0.6" fill="none" />
+      <path d="M 230 14 Q 220 46 215 50 Q 201 79 193 88 Q 170 115 161 129 Q 129 161 115 170 Q 88 193 79 201 Q 50 215 46 220 Q 14 230 0 230" stroke-width="0.65" fill="none" />
+      <path d="M 310 18 Q 296 62 290 68 Q 271 107 260 118 Q 229 155 217 174 Q 174 217 155 229 Q 118 260 107 271 Q 68 290 62 296 Q 18 310 0 310" stroke-width="0.75" fill="none" />
+      <path d="M 400 24 Q 382 80 374 88 Q 350 138 335 152 Q 295 200 280 225 Q 225 280 200 295 Q 152 335 138 350 Q 88 374 80 382 Q 24 400 0 400" stroke-width="0.8" fill="none" />
+      <path d="M 500 30 Q 478 100 468 110 Q 437 172 419 190 Q 369 250 350 281 Q 281 350 250 369 Q 190 419 172 437 Q 110 468 100 478 Q 30 500 0 500" stroke-width="0.85" fill="none" />
+      <path d="M 610 36 Q 583 122 571 134 Q 533 210 511 232 Q 450 305 427 343 Q 343 427 305 450 Q 232 511 210 533 Q 134 571 122 583 Q 36 610 0 610" stroke-width="0.9" fill="none" />
+
+      <circle cx="280" cy="225" r="1.5" fill="#67cdf7" opacity="0.6" />
+      <circle cx="225" cy="280" r="1.5" fill="#67cdf7" opacity="0.6" />
+    </g>
+  </svg>
+
+  {/* Soft central ambient radial gradient to ensure pure pitch black center */}
+  <div class="absolute inset-0 bg-radial-vignette pointer-events-none"></div>
+</div>
+
+<style>
+  .bg-radial-vignette {
+    background: radial-gradient(circle at 50% 25%, rgba(12, 129, 189, 0.05) 0%, transparent 65%),
+                radial-gradient(circle at 50% 75%, rgba(2, 2, 2, 0.4) 0%, #020202 85%);
+  }
+</style>

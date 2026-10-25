@@ -1,0 +1,16 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  },
+  "include": [".astro/types.d.ts", "src/**/*", "*.ts", "*.mjs"],
+  "exclude": ["dist", "node_modules", "bandcamp"]
+}

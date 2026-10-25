@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Header } from '../components/layout/Header';
+import HeroSection from '../components/sections/HeroSection.astro';
+import BioSection from '../components/sections/BioSection.astro';
+import AlbumSection from '../components/sections/AlbumSection.astro';
+import { ContactSection } from '../components/sections/ContactSection';
+import Footer from '../components/layout/Footer.astro';
+import { translations } from '../lib/translations';
+import { getAlbums, getBio, getSocials } from '../lib/pocketbase';
+
+const albums = await getAlbums();
+const bio = await getBio();
+const socials = await getSocials();
+
+const t = translations.en;
+const bioParagraphs = bio.paragraphsEn && bio.paragraphsEn.length > 0 ? bio.paragraphsEn : [t.bioSection.p1, t.bioSection.p2, t.bioSection.p3];
+const bioTitle = bio.titleEn || t.bioSection.title;
+const spotifyUrl = socials.spotify || "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4";
+const youtubeUrl = socials.youtube || "https://www.youtube.com/@saturnaliainfinita999";
+const bandcampUrl = socials.bandcamp || "https://saturnalia999.bandcamp.com/releases";
+const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia999999999";
+---
+
+<Layout title="Saturnalia999 - Official Transmission" lang="en">
+  <Header
+    client:load
+    nav={t.nav}
+    lang="en"
+    spotifyUrl={spotifyUrl}
+    youtubeUrl={youtubeUrl}
+    bandcampUrl={bandcampUrl}
+  />
+  <main class="flex flex-col min-h-screen bg-transparent">
+    <HeroSection
+      title={t.heroSection.title}
+      subtitle={t.heroSection.subtitle}
+    />
+    <BioSection
+      title={bioTitle}
+      paragraphs={bioParagraphs}
+    />
+    <AlbumSection
+      title={t.albumSection.title}
+      buyNowText={t.albumSection.buyNow}
+      albums={albums}
+      lang="en"
+    />
+    <ContactSection
+      client:visible
+      translations={t.contactSection}
+      lang="en"
+    />
+  </main>
+  <Footer
+    spotifyUrl={spotifyUrl}
+    youtubeUrl={youtubeUrl}
+    bandcampUrl={bandcampUrl}
+    instagramUrl={instagramUrl}
+  />
+</Layout>
