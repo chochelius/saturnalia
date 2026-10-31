@@ -75,13 +75,18 @@ export default function AdminDashboard() {
     setIsLoggingIn(true);
     setAuthError('');
 
+    const rawIdentifier = authEmail.trim();
+    const resolvedEmail = rawIdentifier === 'admin'
+      ? 'admin@saturnalia999.com'
+      : (rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@saturnalia999.com`);
+
     try {
       // 1. Intentar como superusuario PocketBase v0.25+
       try {
-        await pb.collection('_superusers').authWithPassword(authEmail, authPassword);
+        await pb.collection('_superusers').authWithPassword(resolvedEmail, authPassword);
       } catch {
         // 2. Intentar como usuario estándar
-        await pb.collection('users').authWithPassword(authEmail, authPassword);
+        await pb.collection('users').authWithPassword(resolvedEmail, authPassword);
       }
 
       setIsAuthenticated(true);
@@ -415,14 +420,14 @@ export default function AdminDashboard() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs uppercase text-muted-foreground mb-1">
-                Identificador de Acceso (Email)
+                Usuario o Email
               </label>
               <input
-                type="email"
+                type="text"
                 required
                 value={authEmail}
                 onChange={(e) => setAuthEmail(e.target.value)}
-                placeholder="admin@saturnalia999.com"
+                placeholder="admin"
                 className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
               />
             </div>
