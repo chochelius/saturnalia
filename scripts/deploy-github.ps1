@@ -2,7 +2,7 @@
 # Saturnalia999 -> https://saturnalia999.art
 
 param (
-    [string]$Branch = "master"
+    [string]$Branch = $(git branch --show-current)
 )
 
 $ErrorActionPreference = "Stop"
