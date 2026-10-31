@@ -11,6 +11,7 @@ export interface HeaderNavTranslations {
   home: string;
   bio: string;
   discography: string;
+  gallery?: string;
   contact: string;
 }
 
@@ -36,6 +37,7 @@ export const Header = ({
   const homeHref = lang === "en" ? "/" : "/es";
   const bioHref = lang === "en" ? "/bio" : "/es/bio";
   const discographyHref = lang === "en" ? "/discography" : "/es/discography";
+  const galleryHref = lang === "en" ? "/gallery" : "/es/gallery";
   const contactHref = lang === "en" ? "/contact" : "/es/contact";
   const linksHref = lang === "en" ? "/links" : "/es/links";
 
@@ -43,6 +45,7 @@ export const Header = ({
     { href: homeHref, label: nav.home },
     { href: bioHref, label: nav.bio },
     { href: discographyHref, label: nav.discography },
+    { href: galleryHref, label: nav.gallery || (lang === "en" ? "Gallery" : "Galería") },
     { href: contactHref, label: nav.contact },
     { href: linksHref, label: "Links" },
   ];

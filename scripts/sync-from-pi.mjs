@@ -55,8 +55,16 @@ async function sync() {
         bioEs: r.nav_bio_es || r.nav_signal_es || 'Bio',
         discographyEn: r.nav_discography_en || 'Discography',
         discographyEs: r.nav_discography_es || 'Discografía',
+        galleryEn: r.nav_gallery_en || 'Gallery',
+        galleryEs: r.nav_gallery_es || 'Galería',
         contactEn: r.nav_contact_en || 'Contact',
         contactEs: r.nav_contact_es || 'Contacto',
+      },
+      gallerySection: {
+        titleEn: r.gallery_title_en || 'Visual Archives',
+        titleEs: r.gallery_title_es || 'Archivos Visuales',
+        subtitleEn: r.gallery_subtitle_en || 'Photography, transmissions, and gothic experimental aesthetics.',
+        subtitleEs: r.gallery_subtitle_es || 'Fotografía, transmisiones y estética visual oscura.',
       },
       albumSection: {
         titleEn: r.album_title_en || 'Discography',
@@ -161,6 +169,51 @@ async function sync() {
       }));
     fs.writeFileSync(path.join(FALLBACK_DIR, 'links.json'), JSON.stringify(linksData, null, 2), 'utf-8');
     console.log(`  ✓ links.json actualizado (${linksData.length} enlaces).`);
+  }
+
+  // 6. Galería fotográfica
+  console.log('🖼️ Sincronizando galería visual y descargando imágenes...');
+  const galleryItems = await fetchCollection('gallery');
+  if (galleryItems && galleryItems.length > 0) {
+    const galleryDir = path.join(ROOT_DIR, 'public/images/gallery');
+    if (!fs.existsSync(galleryDir)) {
+      fs.mkdirSync(galleryDir, { recursive: true });
+    }
+
+    const galleryData = [];
+    for (const r of galleryItems.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0))) {
+      let imageUrl = r.image_url || '';
+
+      // Si tiene archivo subido a PocketBase, descargarlo localmente a public/images/gallery/
+      if (r.image) {
+        const fileUrl = `${BASE_URL}/files/gallery/${r.id}/${r.image}`;
+        const localDest = path.join(galleryDir, r.image);
+        try {
+          const imgRes = await fetch(fileUrl);
+          if (imgRes.ok) {
+            const buffer = Buffer.from(await imgRes.arrayBuffer());
+            fs.writeFileSync(localDest, buffer);
+            imageUrl = `/images/gallery/${r.image}`;
+          }
+        } catch (downloadErr) {
+          console.warn(`  ⚠️ No se pudo descargar la imagen '${r.image}':`, downloadErr.message);
+        }
+      }
+
+      galleryData.push({
+        id: r.id,
+        title: r.title || '',
+        titleEs: r.title_es || r.title || '',
+        captionEn: r.caption_en || '',
+        captionEs: r.caption_es || '',
+        image: imageUrl || r.image_url || 'https://f4.bcbits.com/img/a4169686274_2.jpg',
+        imageFile: r.image || '',
+        order: Number(r.order) || 1,
+      });
+    }
+
+    fs.writeFileSync(path.join(FALLBACK_DIR, 'gallery.json'), JSON.stringify(galleryData, null, 2), 'utf-8');
+    console.log(`  ✓ gallery.json actualizado (${galleryData.length} imágenes descargadas).`);
   }
 
   console.log('\n✨ Sincronización completada. Archivos fallback actualizados para GitHub Pages.\n');

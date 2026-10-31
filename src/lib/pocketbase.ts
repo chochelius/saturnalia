@@ -4,6 +4,7 @@ import fallbackBio from '../data/fallback/bio.json';
 import fallbackSocials from '../data/fallback/socials.json';
 import fallbackLinks from '../data/fallback/links.json';
 import fallbackTexts from '../data/fallback/texts.json';
+import fallbackGallery from '../data/fallback/gallery.json';
 
 export function getPocketBaseUrl(): string {
   if (typeof window !== 'undefined') {
@@ -55,6 +56,17 @@ export interface LinkItem {
   order: number;
 }
 
+export interface GalleryItem {
+  id: string;
+  title: string;
+  titleEs?: string;
+  captionEn?: string;
+  captionEs?: string;
+  image: string;
+  imageFile?: string;
+  order: number;
+}
+
 export interface SiteTexts {
   hero: {
     titleEn: string;
@@ -70,8 +82,16 @@ export interface SiteTexts {
     bioEs: string;
     discographyEn: string;
     discographyEs: string;
+    galleryEn: string;
+    galleryEs: string;
     contactEn: string;
     contactEs: string;
+  };
+  gallerySection: {
+    titleEn: string;
+    titleEs: string;
+    subtitleEn: string;
+    subtitleEs: string;
   };
   albumSection: {
     titleEn: string;
@@ -235,6 +255,39 @@ export async function getLinks(): Promise<LinkItem[]> {
 }
 
 /**
+ * Obtener elementos de la galería visual desde PocketBase con fallback automático
+ */
+export async function getGallery(): Promise<GalleryItem[]> {
+  try {
+    const records = await withFastTimeout(
+      pb.collection('gallery').getFullList({
+        sort: 'order',
+        requestKey: null,
+      })
+    );
+
+    if (records && records.length > 0) {
+      return records.map((r: any) => ({
+        id: r.id,
+        title: r.title || '',
+        titleEs: r.title_es || r.title || '',
+        captionEn: r.caption_en || '',
+        captionEs: r.caption_es || '',
+        image: r.image
+          ? pb.files.getURL(r, r.image)
+          : (r.image_url || 'https://f4.bcbits.com/img/a4169686274_2.jpg'),
+        imageFile: r.image || '',
+        order: Number(r.order) || 1,
+      }));
+    }
+  } catch {
+    // Fallback
+  }
+
+  return (fallbackGallery as GalleryItem[]).sort((a, b) => a.order - b.order);
+}
+
+/**
  * Obtener textos de todas las secciones del sitio desde PocketBase con fallback automático
  */
 export async function getSiteTexts(): Promise<SiteTexts> {
@@ -258,8 +311,16 @@ export async function getSiteTexts(): Promise<SiteTexts> {
           bioEs: record.nav_bio_es ?? record.nav_signal_es ?? fallbackTexts.nav.bioEs,
           discographyEn: record.nav_discography_en ?? fallbackTexts.nav.discographyEn,
           discographyEs: record.nav_discography_es ?? fallbackTexts.nav.discographyEs,
+          galleryEn: record.nav_gallery_en ?? (fallbackTexts.nav as any).galleryEn ?? 'Gallery',
+          galleryEs: record.nav_gallery_es ?? (fallbackTexts.nav as any).galleryEs ?? 'Galería',
           contactEn: record.nav_contact_en ?? fallbackTexts.nav.contactEn,
           contactEs: record.nav_contact_es ?? fallbackTexts.nav.contactEs,
+        },
+        gallerySection: {
+          titleEn: record.gallery_title_en ?? (fallbackTexts as any).gallerySection?.titleEn ?? 'Visual Archives',
+          titleEs: record.gallery_title_es ?? (fallbackTexts as any).gallerySection?.titleEs ?? 'Archivos Visuales',
+          subtitleEn: record.gallery_subtitle_en ?? (fallbackTexts as any).gallerySection?.subtitleEn ?? 'Photography, transmissions, and gothic experimental aesthetics.',
+          subtitleEs: record.gallery_subtitle_es ?? (fallbackTexts as any).gallerySection?.subtitleEs ?? 'Fotografía, transmisiones y estética gótica experimental.',
         },
         albumSection: {
           titleEn: record.album_title_en ?? fallbackTexts.albumSection.titleEn,
@@ -297,7 +358,7 @@ export async function getSiteTexts(): Promise<SiteTexts> {
     // Fallback
   }
 
-  return fallbackTexts as SiteTexts;
+  return fallbackTexts as unknown as SiteTexts;
 }
 
 /**
@@ -310,7 +371,12 @@ export function buildTranslation(siteTexts: SiteTexts, lang: 'en' | 'es') {
       home: isEs ? siteTexts.nav.homeEs : siteTexts.nav.homeEn,
       bio: isEs ? siteTexts.nav.bioEs : siteTexts.nav.bioEn,
       discography: isEs ? siteTexts.nav.discographyEs : siteTexts.nav.discographyEn,
+      gallery: isEs ? (siteTexts.nav.galleryEs || 'Galería') : (siteTexts.nav.galleryEn || 'Gallery'),
       contact: isEs ? siteTexts.nav.contactEs : siteTexts.nav.contactEn,
+    },
+    gallerySection: {
+      title: isEs ? siteTexts.gallerySection.titleEs : siteTexts.gallerySection.titleEn,
+      subtitle: isEs ? siteTexts.gallerySection.subtitleEs : siteTexts.gallerySection.subtitleEn,
     },
     heroSection: {
       title: isEs ? siteTexts.hero.titleEs : siteTexts.hero.titleEn,

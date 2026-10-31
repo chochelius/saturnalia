@@ -1,0 +1,53 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Header } from '../../components/layout/Header';
+import GallerySection from '../../components/sections/GallerySection';
+import Footer from '../../components/layout/Footer.astro';
+import { getGallery, getSocials, getSiteTexts, buildTranslation } from '../../lib/pocketbase';
+
+const gallery = await getGallery();
+const socials = await getSocials();
+const siteTexts = await getSiteTexts();
+
+const t = buildTranslation(siteTexts, 'es');
+const galleryTitle = t.gallerySection.title || "Archivos Visuales";
+const gallerySubtitle = t.gallerySection.subtitle || "Fotografía, transmisiones y estética visual oscura.";
+
+const spotifyUrl = socials.spotify || "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4";
+const youtubeUrl = socials.youtube || "https://www.youtube.com/@saturnaliainfinita999";
+const bandcampUrl = socials.bandcamp || "https://saturnalia999.bandcamp.com/releases";
+const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia999999999";
+---
+
+<Layout
+  title={`Saturnalia999 — ${galleryTitle}`}
+  description="Archivos visuales, fotografía y transmisiones artísticas de Saturnalia999."
+  lang="es"
+>
+  <div class="min-h-screen flex flex-col justify-between">
+    <Header
+      client:load
+      nav={t.nav}
+      lang="es"
+      currentPath={Astro.url.pathname}
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+    />
+    <main class="flex-1 flex flex-col justify-center pt-24 pb-12">
+      <GallerySection
+        client:load
+        title={galleryTitle}
+        subtitle={gallerySubtitle}
+        items={gallery}
+        lang="es"
+      />
+    </main>
+    <Footer
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+      instagramUrl={instagramUrl}
+    />
+  </div>
+</Layout>

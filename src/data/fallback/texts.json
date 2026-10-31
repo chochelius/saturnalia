@@ -13,8 +13,16 @@
     "bioEs": "Bio",
     "discographyEn": "Discography",
     "discographyEs": "Discografía",
+    "galleryEn": "Gallery",
+    "galleryEs": "Galería",
     "contactEn": "Contact",
     "contactEs": "Contacto"
+  },
+  "gallerySection": {
+    "titleEn": "Visual Archives",
+    "titleEs": "Archivos Visuales",
+    "subtitleEn": "Photography, transmissions, and gothic experimental aesthetics.",
+    "subtitleEs": "Fotografía, transmisiones y estética gótica experimental."
   },
   "albumSection": {
     "titleEn": "Discography",
