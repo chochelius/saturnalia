@@ -57,12 +57,28 @@ export default function AdminDashboard() {
   // Modal para nuevo o editar enlace
   const [editingLink, setEditingLink] = useState<any | null>(null);
 
-  // Comprobar autenticación al montar
+  // Comprobar y validar autenticación al montar
   useEffect(() => {
-    if (pb.authStore.isValid) {
-      setIsAuthenticated(true);
-      loadAllData();
-    }
+    const checkAuth = async () => {
+      if (pb.authStore.isValid) {
+        try {
+          // Validar el token contra el servidor PocketBase
+          if (pb.authStore.isSuperuser || pb.authStore.record?.collectionName === '_superusers') {
+            await pb.collection('_superusers').authRefresh();
+          } else {
+            await pb.collection('users').authRefresh();
+          }
+          setIsAuthenticated(true);
+          loadAllData();
+        } catch {
+          // Token inválido o revocado en el servidor
+          pb.authStore.clear();
+          setIsAuthenticated(false);
+          setAuthError('Tu sesión anterior expiró. Por favor ingresa nuevamente con tus credenciales.');
+        }
+      }
+    };
+    checkAuth();
   }, []);
 
   const showNotification = (type: 'success' | 'error', text: string) => {
@@ -191,6 +207,17 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAuthError = (err: any, actionName: string) => {
+    if (err.status === 401 || err.status === 403 || err.status === 404) {
+      showNotification('error', `Sesión expirada o no autorizada al ${actionName}. Por favor inicia sesión nuevamente.`);
+      pb.authStore.clear();
+      setIsAuthenticated(false);
+      setAuthError('Tu sesión anterior expiró. Por favor ingresa con tus credenciales.');
+    } else {
+      showNotification('error', `Error al ${actionName}: ${err.message}`);
+    }
+  };
+
   // Guardar Textos de Secciones
   const handleSaveTexts = async () => {
     setIsSaving(true);
@@ -208,11 +235,7 @@ export default function AdminDashboard() {
       }
       showNotification('success', 'Textos guardados exitosamente.');
     } catch (err: any) {
-      if (err.status === 404 || err.status === 401 || err.status === 403) {
-        showNotification('error', 'Sesión expirada o no autorizada. Por favor haz clic en "Cerrar Sesión" e ingresa con tus credenciales.');
-      } else {
-        showNotification('error', `Error al guardar textos: ${err.message}`);
-      }
+      handleAuthError(err, 'guardar textos');
     } finally {
       setIsSaving(false);
     }
@@ -230,7 +253,7 @@ export default function AdminDashboard() {
       }
       showNotification('success', 'Biografía guardada exitosamente.');
     } catch (err: any) {
-      showNotification('error', `Error al guardar biografía: ${err.message}`);
+      handleAuthError(err, 'guardar biografía');
     } finally {
       setIsSaving(false);
     }
@@ -248,7 +271,7 @@ export default function AdminDashboard() {
       }
       showNotification('success', 'Redes sociales guardadas exitosamente.');
     } catch (err: any) {
-      showNotification('error', `Error al guardar redes: ${err.message}`);
+      handleAuthError(err, 'guardar redes');
     } finally {
       setIsSaving(false);
     }
@@ -283,7 +306,7 @@ export default function AdminDashboard() {
       const updatedList = await pb.collection('albums').getFullList({ sort: 'order', requestKey: null });
       setAlbums(updatedList);
     } catch (err: any) {
-      showNotification('error', `Error guardando álbum: ${err.message}`);
+      handleAuthError(err, 'guardar álbum');
     } finally {
       setIsSaving(false);
     }
@@ -296,7 +319,7 @@ export default function AdminDashboard() {
       setAlbums(albums.filter((a) => a.id !== id));
       showNotification('success', `Álbum "${title}" eliminado.`);
     } catch (err: any) {
-      showNotification('error', `Error al eliminar álbum: ${err.message}`);
+      handleAuthError(err, 'eliminar álbum');
     }
   };
 
@@ -328,7 +351,7 @@ export default function AdminDashboard() {
       const updatedLinks = await pb.collection('links').getFullList({ sort: 'order', requestKey: null });
       setLinks(updatedLinks);
     } catch (err: any) {
-      showNotification('error', `Error guardando enlace: ${err.message}`);
+      handleAuthError(err, 'guardar enlace');
     } finally {
       setIsSaving(false);
     }
@@ -341,7 +364,7 @@ export default function AdminDashboard() {
       setLinks(links.filter((l) => l.id !== id));
       showNotification('success', `Enlace "${title}" eliminado.`);
     } catch (err: any) {
-      showNotification('error', `Error al eliminar enlace: ${err.message}`);
+      handleAuthError(err, 'eliminar enlace');
     }
   };
 
