@@ -66,8 +66,8 @@ export interface SiteTexts {
   nav: {
     homeEn: string;
     homeEs: string;
-    signalEn: string;
-    signalEs: string;
+    bioEn: string;
+    bioEs: string;
     discographyEn: string;
     discographyEs: string;
     contactEn: string;
@@ -254,8 +254,8 @@ export async function getSiteTexts(): Promise<SiteTexts> {
         nav: {
           homeEn: record.nav_home_en ?? fallbackTexts.nav.homeEn,
           homeEs: record.nav_home_es ?? fallbackTexts.nav.homeEs,
-          signalEn: record.nav_signal_en ?? fallbackTexts.nav.signalEn,
-          signalEs: record.nav_signal_es ?? fallbackTexts.nav.signalEs,
+          bioEn: record.nav_bio_en ?? record.nav_signal_en ?? fallbackTexts.nav.bioEn,
+          bioEs: record.nav_bio_es ?? record.nav_signal_es ?? fallbackTexts.nav.bioEs,
           discographyEn: record.nav_discography_en ?? fallbackTexts.nav.discographyEn,
           discographyEs: record.nav_discography_es ?? fallbackTexts.nav.discographyEs,
           contactEn: record.nav_contact_en ?? fallbackTexts.nav.contactEn,
@@ -308,7 +308,7 @@ export function buildTranslation(siteTexts: SiteTexts, lang: 'en' | 'es') {
   return {
     nav: {
       home: isEs ? siteTexts.nav.homeEs : siteTexts.nav.homeEn,
-      signal: isEs ? siteTexts.nav.signalEs : siteTexts.nav.signalEn,
+      bio: isEs ? siteTexts.nav.bioEs : siteTexts.nav.bioEn,
       discography: isEs ? siteTexts.nav.discographyEs : siteTexts.nav.discographyEn,
       contact: isEs ? siteTexts.nav.contactEs : siteTexts.nav.contactEn,
     },

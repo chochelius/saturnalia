@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 
 export interface HeaderNavTranslations {
   home: string;
-  signal: string;
+  bio: string;
   discography: string;
   contact: string;
 }
@@ -33,7 +33,7 @@ export const Header = ({
 
   const navLinks = [
     { href: "#home", label: nav.home },
-    { href: "#bio", label: nav.signal },
+    { href: "#bio", label: nav.bio },
     { href: "#albums", label: nav.discography },
     { href: "#contact", label: nav.contact },
     { href: lang === "en" ? "/links" : "/es/links", label: "Links" },

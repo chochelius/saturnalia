@@ -114,8 +114,8 @@ export default function AdminDashboard() {
           hero_video_url: textsRec.hero_video_url || '',
           nav_home_en: textsRec.nav_home_en || '',
           nav_home_es: textsRec.nav_home_es || '',
-          nav_signal_en: textsRec.nav_signal_en || '',
-          nav_signal_es: textsRec.nav_signal_es || '',
+          nav_bio_en: textsRec.nav_bio_en || textsRec.nav_signal_en || '',
+          nav_bio_es: textsRec.nav_bio_es || textsRec.nav_signal_es || '',
           nav_discography_en: textsRec.nav_discography_en || '',
           nav_discography_es: textsRec.nav_discography_es || '',
           nav_contact_en: textsRec.nav_contact_en || '',
@@ -558,7 +558,7 @@ export default function AdminDashboard() {
             }`}
           >
             <FileText className="w-4 h-4" />
-            <span>Bio / La Señal</span>
+            <span>Bio</span>
           </button>
 
           <button
@@ -707,13 +707,13 @@ export default function AdminDashboard() {
         )}
 
         {/* ========================================================= */}
-        {/* TAB 2: BIO / LA SEÑAL */}
+        {/* TAB 2: BIO */}
         {/* ========================================================= */}
         {activeTab === 'bio' && bio && (
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-primary/20">
               <div>
-                <h2 className="text-base font-bold text-primary uppercase">Biografía Oficial // La Señal</h2>
+                <h2 className="text-base font-bold text-primary uppercase">Biografía Oficial</h2>
                 <p className="text-xs text-muted-foreground">Administra los párrafos de historia y manifiesto en inglés y español.</p>
               </div>
               <button
@@ -1347,20 +1347,20 @@ export default function AdminDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] uppercase text-muted-foreground mb-1">Señal (EN)</label>
+                  <label className="block text-[11px] uppercase text-muted-foreground mb-1">Bio (EN)</label>
                   <input
                     type="text"
-                    value={siteTexts.nav_signal_en}
-                    onChange={(e) => setSiteTexts({ ...siteTexts, nav_signal_en: e.target.value })}
+                    value={siteTexts.nav_bio_en}
+                    onChange={(e) => setSiteTexts({ ...siteTexts, nav_bio_en: e.target.value })}
                     className="w-full bg-[#111] border border-primary/30 rounded px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] uppercase text-muted-foreground mb-1">Señal (ES)</label>
+                  <label className="block text-[11px] uppercase text-muted-foreground mb-1">Bio (ES)</label>
                   <input
                     type="text"
-                    value={siteTexts.nav_signal_es}
-                    onChange={(e) => setSiteTexts({ ...siteTexts, nav_signal_es: e.target.value })}
+                    value={siteTexts.nav_bio_es}
+                    onChange={(e) => setSiteTexts({ ...siteTexts, nav_bio_es: e.target.value })}
                     className="w-full bg-[#111] border border-primary/30 rounded px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
                   />
                 </div>

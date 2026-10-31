@@ -51,8 +51,8 @@ async function sync() {
       nav: {
         homeEn: r.nav_home_en || 'Home',
         homeEs: r.nav_home_es || 'Inicio',
-        signalEn: r.nav_signal_en || 'Signal',
-        signalEs: r.nav_signal_es || 'Señal',
+        bioEn: r.nav_bio_en || r.nav_signal_en || 'Bio',
+        bioEs: r.nav_bio_es || r.nav_signal_es || 'Bio',
         discographyEn: r.nav_discography_en || 'Discography',
         discographyEs: r.nav_discography_es || 'Discografía',
         contactEn: r.nav_contact_en || 'Contact',
@@ -99,8 +99,8 @@ async function sync() {
   if (bioItems && bioItems.length > 0) {
     const r = bioItems[0];
     const bioData = {
-      titleEn: r.title_en || 'The Signal',
-      titleEs: r.title_es || 'La Señal',
+      titleEn: r.title_en || 'Biography',
+      titleEs: r.title_es || 'Biografía',
       paragraphsEn: Array.isArray(r.paragraphs_en) ? r.paragraphs_en : [],
       paragraphsEs: Array.isArray(r.paragraphs_es) ? r.paragraphs_es : [],
     };
