@@ -1,0 +1,49 @@
+{
+  "hero": {
+    "titleEn": "DOUBLE FACED",
+    "titleEs": "DOUBLE FACED",
+    "subtitleEn": "Official music video from 'Can You Be Honest For Once?' — Out now.",
+    "subtitleEs": "Video musical oficial de 'Can You Be Honest For Once?' — Disponible ahora.",
+    "videoUrl": "https://www.youtube.com/embed/MJo7EKyST6U"
+  },
+  "nav": {
+    "homeEn": "Home",
+    "homeEs": "Inicio",
+    "signalEn": "Signal",
+    "signalEs": "Señal",
+    "discographyEn": "Discography",
+    "discographyEs": "Discografía",
+    "contactEn": "Contact",
+    "contactEs": "Contacto"
+  },
+  "albumSection": {
+    "titleEn": "Discography",
+    "titleEs": "Discografía",
+    "buyNowEn": "Buy Now",
+    "buyNowEs": "Comprar Ahora"
+  },
+  "contactSection": {
+    "titleEn": "Make Contact",
+    "titleEs": "Hacer Contacto",
+    "descriptionEn": "Have a question, a proposal, or just want to connect? Drop a line into the datastream.",
+    "descriptionEs": "¿Tienes una pregunta, una propuesta o simplemente quieres conectar? Deja un mensaje en el flujo de datos.",
+    "nameLabelEn": "Handle",
+    "nameLabelEs": "Alias",
+    "namePlaceholderEn": "Your alias",
+    "namePlaceholderEs": "Tu alias",
+    "emailLabelEn": "Secure Channel (Email)",
+    "emailLabelEs": "Canal Seguro (Email)",
+    "emailPlaceholderEn": "your.address@protocol.net",
+    "emailPlaceholderEs": "tu.direccion@protocolo.net",
+    "messageLabelEn": "Message",
+    "messageLabelEs": "Mensaje",
+    "messagePlaceholderEn": "Your transmission...",
+    "messagePlaceholderEs": "Tu transmisión...",
+    "submitEn": "Transmit Message",
+    "submitEs": "Transmitir Mensaje",
+    "toastTitleEn": "Transmission Received!",
+    "toastTitleEs": "¡Transmisión Recibida!",
+    "toastDescEn": "Thanks for reaching out. We'll get back to you from the void.",
+    "toastDescEs": "Gracias por contactar. Te responderemos desde el vacío."
+  }
+}

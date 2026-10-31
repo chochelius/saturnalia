@@ -1,0 +1,10 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AdminDashboard from '../../components/admin/AdminDashboard';
+---
+
+<Layout title="Saturnalia999 - Consola de Control" lang="es">
+  <main class="min-h-screen bg-[#020202] text-foreground">
+    <AdminDashboard client:only="react" />
+  </main>
+</Layout>

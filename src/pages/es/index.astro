@@ -6,16 +6,16 @@ import BioSection from '../../components/sections/BioSection.astro';
 import AlbumSection from '../../components/sections/AlbumSection.astro';
 import { ContactSection } from '../../components/sections/ContactSection';
 import Footer from '../../components/layout/Footer.astro';
-import { translations } from '../../lib/translations';
-import { getAlbums, getBio, getSocials } from '../../lib/pocketbase';
+import { getAlbums, getBio, getSocials, getSiteTexts, buildTranslation } from '../../lib/pocketbase';
 
 const albums = await getAlbums();
 const bio = await getBio();
 const socials = await getSocials();
+const siteTexts = await getSiteTexts();
 
-const t = translations.es;
-const bioParagraphs = bio.paragraphsEs && bio.paragraphsEs.length > 0 ? bio.paragraphsEs : [t.bioSection.p1, t.bioSection.p2, t.bioSection.p3];
-const bioTitle = bio.titleEs || t.bioSection.title;
+const t = buildTranslation(siteTexts, 'es');
+const bioParagraphs = bio.paragraphsEs && bio.paragraphsEs.length > 0 ? bio.paragraphsEs : [];
+const bioTitle = bio.titleEs || "La Señal";
 const spotifyUrl = socials.spotify || "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4";
 const youtubeUrl = socials.youtube || "https://www.youtube.com/@saturnaliainfinita999";
 const bandcampUrl = socials.bandcamp || "https://saturnalia999.bandcamp.com/releases";
@@ -35,6 +35,7 @@ const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia9
     <HeroSection
       title={t.heroSection.title}
       subtitle={t.heroSection.subtitle}
+      videoUrl={t.heroSection.videoUrl}
     />
     <BioSection
       title={bioTitle}

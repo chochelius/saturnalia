@@ -51,7 +51,7 @@ Remove-Item $tempFile -Force
 # 4. Desempaquetado, instalacion y compilacion remota
 Write-Host "4. Actualizando dependencias y compilando en la Raspberry Pi..." -ForegroundColor Yellow
 
-$remoteScript = 'export PATH="/home/chochelius/.nvm/versions/node/v26.12.1/bin:$PATH"; cd /home/chochelius/saturnalia; tar -xzf /tmp/saturnalia_update.tar.gz; rm -f /tmp/saturnalia_update.tar.gz; npm install --no-audit --no-fund; npm run build; if systemctl --user is-active --quiet saturnalia.service 2>/dev/null; then systemctl --user restart saturnalia.service; echo "Servicio saturnalia.service reiniciado."; fi'
+$remoteScript = 'export PATH="/home/chochelius/.nvm/versions/node/v26.12.1/bin:/usr/local/bin:/usr/bin:/bin:$PATH"; cd /home/chochelius/saturnalia; tar -xzf /tmp/saturnalia_update.tar.gz; rm -f /tmp/saturnalia_update.tar.gz; npm install --no-audit --no-fund; npm run build; if systemctl --user is-active --quiet saturnalia.service 2>/dev/null; then systemctl --user restart saturnalia.service; echo "Servicio saturnalia.service reiniciado."; fi'
 
 $targetSsh = $User + "@" + $HostName
 ssh -n $targetSsh $remoteScript

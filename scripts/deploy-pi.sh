@@ -28,13 +28,14 @@ rm -f /tmp/saturnalia_update.tar.gz
 
 # 4. Desempaquetar y compilar en la Raspberry Pi
 ssh -n "$USER@$HOST" << EOF
+export PATH="/home/chochelius/.nvm/versions/node/v26.12.1/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 cd $REMOTE_DIR
 tar -xzf /tmp/saturnalia_update.tar.gz
 rm -f /tmp/saturnalia_update.tar.gz
 npm install --no-audit --no-fund
 npm run build
-if systemctl is-active --quiet saturnalia.service 2>/dev/null; then
-    sudo systemctl restart saturnalia.service
+if systemctl --user is-active --quiet saturnalia.service 2>/dev/null; then
+    systemctl --user restart saturnalia.service
     echo "✅ Servicio saturnalia.service reiniciado."
 else
     echo "ℹ️ Servicio systemd no activo aún."
