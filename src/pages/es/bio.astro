@@ -1,0 +1,50 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Header } from '../../components/layout/Header';
+import BioSection from '../../components/sections/BioSection.astro';
+import Footer from '../../components/layout/Footer.astro';
+import { getBio, getSocials, getSiteTexts, buildTranslation } from '../../lib/pocketbase';
+
+const bio = await getBio();
+const socials = await getSocials();
+const siteTexts = await getSiteTexts();
+
+const t = buildTranslation(siteTexts, 'es');
+const bioParagraphs = bio.paragraphsEs && bio.paragraphsEs.length > 0 ? bio.paragraphsEs : [];
+const bioTitle = bio.titleEs || "Biografía";
+
+const spotifyUrl = socials.spotify || "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4";
+const youtubeUrl = socials.youtube || "https://www.youtube.com/@saturnaliainfinita999";
+const bandcampUrl = socials.bandcamp || "https://saturnalia999.bandcamp.com/releases";
+const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia999999999";
+---
+
+<Layout
+  title={`Saturnalia999 — ${bioTitle}`}
+  description="Biografía, trasfondo y propuesta artística de Saturnalia999."
+  lang="es"
+>
+  <div class="min-h-screen flex flex-col justify-between">
+    <Header
+      client:load
+      nav={t.nav}
+      lang="es"
+      currentPath={Astro.url.pathname}
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+    />
+    <main class="flex-1 flex flex-col justify-center pt-24 pb-12">
+      <BioSection
+        title={bioTitle}
+        paragraphs={bioParagraphs}
+      />
+    </main>
+    <Footer
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+      instagramUrl={instagramUrl}
+    />
+  </div>
+</Layout>

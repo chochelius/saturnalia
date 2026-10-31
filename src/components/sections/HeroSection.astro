@@ -6,12 +6,14 @@ interface Props {
   title: string;
   subtitle: string;
   videoUrl?: string;
+  lang?: 'en' | 'es';
 }
 
 const {
   title,
   subtitle,
-  videoUrl = "https://www.youtube.com/embed/MJo7EKyST6U"
+  videoUrl = "https://www.youtube.com/embed/MJo7EKyST6U",
+  lang = 'en'
 } = Astro.props;
 
 // Normalizar URL de YouTube a embed
@@ -55,6 +57,27 @@ const formattedVideoUrl = getEmbedUrl(videoUrl);
         allowfullscreen
         loading="lazy"
       ></iframe>
+    </div>
+
+    <div class="mt-8 flex flex-wrap gap-4 justify-center">
+      <a
+        href={lang === 'en' ? '/discography' : '/es/discography'}
+        class="px-6 py-2.5 border border-primary bg-primary/10 hover:bg-primary text-primary hover:text-black font-headline uppercase tracking-widest text-sm transition-all duration-300 shadow-lg shadow-primary/20"
+      >
+        {lang === 'en' ? 'Discography' : 'Discografía'}
+      </a>
+      <a
+        href={lang === 'en' ? '/bio' : '/es/bio'}
+        class="px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-sm transition-all duration-300"
+      >
+        {lang === 'en' ? 'Biography' : 'Biografía'}
+      </a>
+      <a
+        href={lang === 'en' ? '/contact' : '/es/contact'}
+        class="px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-sm transition-all duration-300"
+      >
+        {lang === 'en' ? 'Contact' : 'Contacto'}
+      </a>
     </div>
   </div>
 </section>

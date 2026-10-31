@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Header } from '../components/layout/Header';
+import AlbumSection from '../components/sections/AlbumSection.astro';
+import Footer from '../components/layout/Footer.astro';
+import { getAlbums, getSocials, getSiteTexts, buildTranslation } from '../lib/pocketbase';
+
+const albums = await getAlbums();
+const socials = await getSocials();
+const siteTexts = await getSiteTexts();
+
+const t = buildTranslation(siteTexts, 'en');
+
+const spotifyUrl = socials.spotify || "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4";
+const youtubeUrl = socials.youtube || "https://www.youtube.com/@saturnaliainfinita999";
+const bandcampUrl = socials.bandcamp || "https://saturnalia999.bandcamp.com/releases";
+const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia999999999";
+---
+
+<Layout
+  title={`Saturnalia999 — ${t.albumSection.title}`}
+  description="Official discography, streamings, releases and audio players of Saturnalia999."
+  lang="en"
+>
+  <div class="min-h-screen flex flex-col justify-between">
+    <Header
+      client:load
+      nav={t.nav}
+      lang="en"
+      currentPath={Astro.url.pathname}
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+    />
+    <main class="flex-1 pt-24 pb-12">
+      <AlbumSection
+        title={t.albumSection.title}
+        buyNowText={t.albumSection.buyNow}
+        albums={albums}
+        lang="en"
+      />
+    </main>
+    <Footer
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+      instagramUrl={instagramUrl}
+    />
+  </div>
+</Layout>

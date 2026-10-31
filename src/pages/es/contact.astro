@@ -1,0 +1,48 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Header } from '../../components/layout/Header';
+import { ContactSection } from '../../components/sections/ContactSection';
+import Footer from '../../components/layout/Footer.astro';
+import { getSocials, getSiteTexts, buildTranslation } from '../../lib/pocketbase';
+
+const socials = await getSocials();
+const siteTexts = await getSiteTexts();
+
+const t = buildTranslation(siteTexts, 'es');
+
+const spotifyUrl = socials.spotify || "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4";
+const youtubeUrl = socials.youtube || "https://www.youtube.com/@saturnaliainfinita999";
+const bandcampUrl = socials.bandcamp || "https://saturnalia999.bandcamp.com/releases";
+const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia999999999";
+---
+
+<Layout
+  title={`Saturnalia999 — ${t.contactSection.title}`}
+  description="Contacto directo, prensa, presentaciones y booking de Saturnalia999."
+  lang="es"
+>
+  <div class="min-h-screen flex flex-col justify-between">
+    <Header
+      client:load
+      nav={t.nav}
+      lang="es"
+      currentPath={Astro.url.pathname}
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+    />
+    <main class="flex-1 flex flex-col justify-center pt-24 pb-12">
+      <ContactSection
+        client:load
+        translations={t.contactSection}
+        lang="es"
+      />
+    </main>
+    <Footer
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+      instagramUrl={instagramUrl}
+    />
+  </div>
+</Layout>
