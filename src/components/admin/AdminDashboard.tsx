@@ -195,15 +195,24 @@ export default function AdminDashboard() {
   const handleSaveTexts = async () => {
     setIsSaving(true);
     try {
+      const payload = {
+        ...siteTexts,
+        nav_signal_en: siteTexts?.nav_bio_en || siteTexts?.nav_signal_en || 'Bio',
+        nav_signal_es: siteTexts?.nav_bio_es || siteTexts?.nav_signal_es || 'Bio',
+      };
       if (siteTextsId) {
-        await pb.collection('site_texts').update(siteTextsId, siteTexts);
+        await pb.collection('site_texts').update(siteTextsId, payload);
       } else {
-        const created = await pb.collection('site_texts').create(siteTexts);
+        const created = await pb.collection('site_texts').create(payload);
         setSiteTextsId(created.id);
       }
       showNotification('success', 'Textos guardados exitosamente.');
     } catch (err: any) {
-      showNotification('error', `Error al guardar textos: ${err.message}`);
+      if (err.status === 404 || err.status === 401 || err.status === 403) {
+        showNotification('error', 'Sesión expirada o no autorizada. Por favor haz clic en "Cerrar Sesión" e ingresa con tus credenciales.');
+      } else {
+        showNotification('error', `Error al guardar textos: ${err.message}`);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -386,6 +395,48 @@ export default function AdminDashboard() {
     if (matchShort && matchShort[1]) return `https://www.youtube.com/embed/${matchShort[1]}`;
     return url;
   };
+
+  // Si se abre desde GitHub Pages (saturnalia999.art), avisar que la base de datos reside en la Raspberry Pi
+  const isGitHubPages = typeof window !== 'undefined' && 
+    (window.location.hostname.includes('saturnalia999.art') || window.location.hostname.includes('github.io'));
+
+  if (isGitHubPages) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#020202] p-4 font-mono relative">
+        <div className="w-full max-w-lg bg-[#080808] border-2 border-primary/50 p-8 rounded shadow-2xl shadow-primary/20 text-center">
+          <div className="p-3 bg-primary/10 border border-primary/40 rounded-full w-14 h-14 mx-auto mb-4 text-primary flex items-center justify-center animate-pulse">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h1 className="text-xl font-bold tracking-widest text-primary uppercase mb-2">
+            CONSOLA DE CONTROL // RASPBERRY PI
+          </h1>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest mb-6">
+            Sitio de Producción Estático
+          </p>
+          <div className="p-4 bg-primary/5 border border-primary/20 rounded text-left text-xs space-y-3 mb-6 text-foreground/80">
+            <p>
+              🔒 <strong>Este dominio en GitHub Pages es de solo lectura y compilación estática.</strong>
+            </p>
+            <p>
+              La base de datos viva (PocketBase) y el panel de administración operan exclusivamente en tu <strong>Raspberry Pi</strong>:
+            </p>
+            <div className="p-3 bg-black border border-primary/40 text-primary font-mono text-center select-all text-sm font-bold">
+              http://192.168.1.118:9002/admin
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Para editar textos, biografía, discografía o enlaces, accede a la IP local de tu Raspberry Pi en tu red local.
+            </p>
+          </div>
+          <a
+            href="/"
+            className="inline-block py-2.5 px-6 bg-primary text-black font-semibold text-xs uppercase tracking-widest hover:bg-primary/90 transition-colors"
+          >
+            Volver al Sitio Principal
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // PANTALLA DE ACCESO / LOGIN
