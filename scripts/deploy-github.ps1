@@ -1,4 +1,4 @@
-# Script de despliegue a producción en GitHub Pages
+# Script de despliegue a produccion en GitHub Pages
 # Saturnalia999 -> https://saturnalia999.art
 
 param (
@@ -9,7 +9,7 @@ $ErrorActionPreference = "Stop"
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host " 🚀 INICIANDO DESPLIEGUE A PRODUCCIÓN // GITHUB PAGES" -ForegroundColor Cyan
+Write-Host " [*] INICIANDO DESPLIEGUE A PRODUCCION // GITHUB PAGES" -ForegroundColor Cyan
 Write-Host " Dominio destino: https://saturnalia999.art" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
@@ -18,14 +18,14 @@ Write-Host ""
 Write-Host "1. Sincronizando contenido validado desde la Raspberry Pi..." -ForegroundColor Yellow
 node ./scripts/sync-from-pi.mjs
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "⚠️ Advertencia: No se pudo conectar a la Raspberry Pi. Se utilizarán los datos locales actuales." -ForegroundColor DarkYellow
+    Write-Host "[!] Advertencia: No se pudo conectar a la Raspberry Pi. Se utilizaran los datos locales actuales." -ForegroundColor DarkYellow
 }
 
-# 2. Validación de tipos TypeScript
-Write-Host "2. Verificando integridad de código (TypeScript)..." -ForegroundColor Yellow
+# 2. Validacion de tipos TypeScript
+Write-Host "2. Verificando integridad de codigo (TypeScript)..." -ForegroundColor Yellow
 npm.cmd run typecheck
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ Error en TypeScript. Corrige los errores antes de desplegar a producción." -ForegroundColor Red
+    Write-Host "[X] Error en TypeScript. Corrige los errores antes de desplegar a produccion." -ForegroundColor Red
     exit 1
 }
 
@@ -33,7 +33,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "3. Verificando cambios en el repositorio local..." -ForegroundColor Yellow
 $gitStatus = git status --porcelain
 if ($gitStatus) {
-    Write-Host "Guardando cambios y sincronización de contenido en Git..." -ForegroundColor Yellow
+    Write-Host "Guardando cambios y sincronizacion de contenido en Git..." -ForegroundColor Yellow
     git add .
     $commitMsg = "chore(release): deploy to github pages " + (Get-Date -Format 'yyyy-MM-dd HH:mm')
     git commit -m $commitMsg
@@ -47,12 +47,12 @@ if ($remotes -contains "origin") {
     git push origin $Branch
     Write-Host ""
     Write-Host "==========================================================" -ForegroundColor Green
-    Write-Host " ✅ CAMBIOS ENVIADOS A GITHUB EXITOSAMENTE" -ForegroundColor Green
-    Write-Host " GitHub Actions compilará y publicará automáticamente en:" -ForegroundColor Cyan
+    Write-Host " [OK] CAMBIOS ENVIADOS A GITHUB EXITOSAMENTE" -ForegroundColor Green
+    Write-Host " GitHub Actions compilara y publicara automaticamente en:" -ForegroundColor Cyan
     Write-Host " https://saturnalia999.art" -ForegroundColor Cyan
     Write-Host "==========================================================" -ForegroundColor Green
 } else {
-    Write-Host "⚠️ No hay un remoto 'origin' configurado en Git." -ForegroundColor DarkYellow
+    Write-Host "[!] No hay un remoto 'origin' configurado en Git." -ForegroundColor DarkYellow
     Write-Host "Para vincular tu repositorio de GitHub, ejecuta:" -ForegroundColor Cyan
     Write-Host "  git remote add origin https://github.com/<tu-usuario>/<tu-repo>.git" -ForegroundColor White
     Write-Host "  git push -u origin $Branch" -ForegroundColor White
