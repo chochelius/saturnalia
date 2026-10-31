@@ -19,21 +19,12 @@ $gitStatus = git status --porcelain
 if ($gitStatus) {
     Write-Host "Hay cambios locales sin commitear. Creando commit automatico..." -ForegroundColor Yellow
     git add .
-    $commitMsg = "chore: auto-sync update " + (Get-Date -Format 'yyyy-MM-dd HH:mm')
+    $commitMsg = "chore: staging update " + (Get-Date -Format 'yyyy-MM-dd HH:mm')
     git commit -m $commitMsg
 }
 
-# 2. Push a GitHub si existe remote 'origin'
-$remotes = git remote
-if ($remotes -contains "origin") {
-    Write-Host "2. Subiendo cambios a GitHub (origin/main)..." -ForegroundColor Yellow
-    git push origin main
-} else {
-    Write-Host "No hay remoto 'origin' configurado en Git aun. Saltando push central." -ForegroundColor Gray
-}
-
-# 3. Sincronizacion con la Raspberry Pi
-Write-Host "3. Conectando con la Raspberry Pi ($User@$HostName)..." -ForegroundColor Yellow
+# 2. Sincronizacion con la Raspberry Pi (Entorno de Testing / Staging)
+Write-Host "2. Conectando con la Raspberry Pi ($User@$HostName)..." -ForegroundColor Yellow
 
 $tempFile = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), "saturnalia_update.tar.gz")
 if (Test-Path $tempFile) {
@@ -48,8 +39,8 @@ $targetScp = $User + "@" + $HostName + ":/tmp/saturnalia_update.tar.gz"
 scp $tempFile $targetScp
 Remove-Item $tempFile -Force
 
-# 4. Desempaquetado, instalacion y compilacion remota
-Write-Host "4. Actualizando dependencias y compilando en la Raspberry Pi..." -ForegroundColor Yellow
+# 3. Desempaquetado, instalacion y compilacion remota
+Write-Host "3. Actualizando dependencias y compilando en la Raspberry Pi..." -ForegroundColor Yellow
 
 $remoteScript = 'export PATH="/home/chochelius/.nvm/versions/node/v26.12.1/bin:/usr/local/bin:/usr/bin:/bin:$PATH"; cd /home/chochelius/saturnalia; tar -xzf /tmp/saturnalia_update.tar.gz; rm -f /tmp/saturnalia_update.tar.gz; npm install --no-audit --no-fund; npm run build; if systemctl --user is-active --quiet saturnalia.service 2>/dev/null; then systemctl --user restart saturnalia.service; echo "Servicio saturnalia.service reiniciado."; fi'
 

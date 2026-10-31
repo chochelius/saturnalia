@@ -7,7 +7,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "tsc --noEmit",
-    "sync:pi": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-pi.ps1"
+    "test:pi": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-pi.ps1",
+    "sync:pi": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-pi.ps1",
+    "sync:content": "node ./scripts/sync-from-pi.mjs",
+    "deploy:gh": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-github.ps1"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.1",
