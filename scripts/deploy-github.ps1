@@ -45,6 +45,14 @@ $remotes = git remote
 if ($remotes -contains "origin") {
     Write-Host "Subiendo a GitHub (origin/$Branch)..." -ForegroundColor Yellow
     git push origin $Branch
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ""
+        Write-Host "==========================================================" -ForegroundColor Red
+        Write-Host " [X] ERROR AL SUBIR A GITHUB" -ForegroundColor Red
+        Write-Host " Revisa tu autenticacion de GitHub (ej. ejecuta 'gh auth login' en tu terminal)." -ForegroundColor Yellow
+        Write-Host "==========================================================" -ForegroundColor Red
+        exit 1
+    }
     Write-Host ""
     Write-Host "==========================================================" -ForegroundColor Green
     Write-Host " [OK] CAMBIOS ENVIADOS A GITHUB EXITOSAMENTE" -ForegroundColor Green
