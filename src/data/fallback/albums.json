@@ -7,6 +7,8 @@
     "streamUrl": "https://saturnalia999.bandcamp.com/album/why-to-sing-beautifully",
     "audioUrl": "",
     "bandcampEmbedId": "4169686274",
+    "playerSource": "auto",
+    "spotifyUrl": "",
     "order": 1
   },
   {
@@ -17,6 +19,8 @@
     "streamUrl": "https://saturnalia999.bandcamp.com/album/can-you-be-honest-for-once-deluxe-edition",
     "audioUrl": "",
     "bandcampEmbedId": "3863320402",
+    "playerSource": "auto",
+    "spotifyUrl": "",
     "order": 2
   },
   {
@@ -27,6 +31,8 @@
     "streamUrl": "https://saturnalia999.bandcamp.com/album/can-you-be-honest-for-once",
     "audioUrl": "",
     "bandcampEmbedId": "1629141684",
+    "playerSource": "auto",
+    "spotifyUrl": "",
     "order": 3
   },
   {
@@ -37,6 +43,8 @@
     "streamUrl": "https://saturnalia999.bandcamp.com/album/why-to-live-for-a-dream-deluxe-edition",
     "audioUrl": "",
     "bandcampEmbedId": "0445278854",
+    "playerSource": "auto",
+    "spotifyUrl": "",
     "order": 4
   },
   {
@@ -47,6 +55,8 @@
     "streamUrl": "https://saturnalia999.bandcamp.com/track/young-blood",
     "audioUrl": "",
     "bandcampEmbedId": "2382582916",
+    "playerSource": "auto",
+    "spotifyUrl": "",
     "order": 5
   },
   {
@@ -57,6 +67,8 @@
     "streamUrl": "https://saturnalia999.bandcamp.com/track/mechanic-angel",
     "audioUrl": "",
     "bandcampEmbedId": "3999687054",
+    "playerSource": "auto",
+    "spotifyUrl": "",
     "order": 6
   }
 ]

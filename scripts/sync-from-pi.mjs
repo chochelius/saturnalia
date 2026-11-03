@@ -130,6 +130,8 @@ async function sync() {
         streamUrl: r.stream_url || '',
         audioUrl: r.audio_url || '',
         bandcampEmbedId: r.bandcamp_embed_id || '',
+        playerSource: r.player_source || 'auto',
+        spotifyUrl: r.spotify_url || '',
         order: Number(r.order) || 1,
       }));
     fs.writeFileSync(path.join(FALLBACK_DIR, 'albums.json'), JSON.stringify(albumsData, null, 2), 'utf-8');
@@ -236,6 +238,7 @@ async function sync() {
           order: Number(r.order) || 1,
           streamUrl,
           audioFile: r.audio_file || '',
+          externalUrl: r.external_url || '',
         };
       });
     fs.writeFileSync(path.join(FALLBACK_DIR, 'tracks.json'), JSON.stringify(tracksData, null, 2), 'utf-8');

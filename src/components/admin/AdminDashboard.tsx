@@ -1251,8 +1251,33 @@ export default function AdminDashboard() {
                   <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                     <div>
                       <h3 className="font-bold text-sm text-foreground uppercase line-clamp-1">{album.title}</h3>
+                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary">
+                          {album.player_source === 'bandcamp' ? '🎵 Bandcamp' : album.player_source === 'spotify' ? '🎧 Spotify' : album.player_source === 'r2' ? '☁️ Cloudflare R2' : '🔄 Auto'}
+                        </span>
+                        {(() => {
+                          const albumTracksCount = tracks.filter((t) => t.album === album.id).length;
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedAlbumFilter(album.id);
+                                setActiveTab('tracks');
+                              }}
+                              className="text-[10px] text-primary/80 hover:text-primary hover:underline flex items-center gap-1 font-mono bg-[#111] px-1.5 py-0.5 rounded border border-primary/20"
+                              title="Gestionar pistas en Cloudflare R2"
+                            >
+                              <Headphones className="w-3 h-3" />
+                              <span>{albumTracksCount} pista{albumTracksCount !== 1 ? 's' : ''}</span>
+                            </button>
+                          );
+                        })()}
+                      </div>
                       {album.bandcamp_embed_id && (
-                        <p className="text-[10px] text-muted-foreground mt-0.5">Embed ID: {album.bandcamp_embed_id}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Embed ID: {album.bandcamp_embed_id}</p>
+                      )}
+                      {album.spotify_url && (
+                        <p className="text-[10px] text-emerald-400/80 mt-0.5 truncate">Spotify: {album.spotify_url}</p>
                       )}
                       {album.audio_url && (
                         <p className="text-[10px] text-primary/80 mt-0.5 flex items-center gap-1">
@@ -1377,6 +1402,41 @@ export default function AdminDashboard() {
                         placeholder="https://.../preview.mp3"
                         className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
                       />
+                    </div>
+
+                    {/* Selector de Alternancia de Fuente de Streaming */}
+                    <div className="p-3 bg-[#111] border border-primary/30 rounded space-y-3">
+                      <div>
+                        <label className="block text-xs uppercase text-primary font-bold mb-1">
+                          Fuente de Reproductor (Alternar R2 / Bandcamp / Spotify)
+                        </label>
+                        <select
+                          value={editingAlbum.player_source || 'auto'}
+                          onChange={(e) => setEditingAlbum({ ...editingAlbum, player_source: e.target.value })}
+                          className="w-full bg-black border border-primary/40 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        >
+                          <option value="auto">🔄 Auto (Cloudflare R2 si tiene pistas, sino Bandcamp/Spotify)</option>
+                          <option value="r2">☁️ Cloudflare R2 (Reproductor Nativo con Sticky Player)</option>
+                          <option value="bandcamp">🎵 Bandcamp Embed (Widget Oficial de Bandcamp)</option>
+                          <option value="spotify">🎧 Spotify Embed (Widget Oficial de Spotify)</option>
+                        </select>
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          Permite elegir qué reproductor utilizará este lanzamiento en la web.
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">
+                          URL / Enlace de Spotify (Opcional)
+                        </label>
+                        <input
+                          type="url"
+                          value={editingAlbum.spotify_url || ''}
+                          onChange={(e) => setEditingAlbum({ ...editingAlbum, spotify_url: e.target.value })}
+                          placeholder="https://open.spotify.com/album/..."
+                          className="w-full bg-black border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-end gap-3 pt-3 border-t border-primary/20">
@@ -1793,13 +1853,27 @@ export default function AdminDashboard() {
                     {/* URL Externa alternativa */}
                     <div>
                       <label className="block text-xs uppercase text-muted-foreground mb-1">
-                        O URL de Audio Externa (Opcional)
+                        O URL de Audio Streaming Directo (Opcional)
                       </label>
                       <input
                         type="url"
                         value={editingTrack.audio_url || ''}
                         onChange={(e) => setEditingTrack({ ...editingTrack, audio_url: e.target.value })}
                         placeholder="https://.../stream.mp3"
+                        className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    {/* Enlace Externo a Spotify / Bandcamp */}
+                    <div>
+                      <label className="block text-xs uppercase text-muted-foreground mb-1">
+                        Enlace a la pista en Bandcamp o Spotify (Opcional)
+                      </label>
+                      <input
+                        type="url"
+                        value={editingTrack.external_url || ''}
+                        onChange={(e) => setEditingTrack({ ...editingTrack, external_url: e.target.value })}
+                        placeholder="https://saturnalia999.bandcamp.com/track/... o Spotify"
                         className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
                       />
                     </div>

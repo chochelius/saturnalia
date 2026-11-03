@@ -29,6 +29,8 @@ export interface Album {
   streamUrl: string;
   audioUrl?: string;
   bandcampEmbedId?: string;
+  spotifyUrl?: string;
+  playerSource?: 'auto' | 'r2' | 'bandcamp' | 'spotify';
   order: number;
 }
 
@@ -77,6 +79,7 @@ export interface TrackItem {
   order: number;
   streamUrl: string;
   audioFile?: string;
+  externalUrl?: string;
 }
 
 export interface SiteTexts {
@@ -175,6 +178,8 @@ export async function getAlbums(): Promise<Album[]> {
         streamUrl: r.stream_url || r.streamUrl || 'https://saturnalia999.bandcamp.com/releases',
         audioUrl: r.audio_file ? pb.files.getURL(r, r.audio_file) : (r.audio_url || r.audioUrl || ''),
         bandcampEmbedId: r.bandcamp_embed_id || r.bandcampEmbedId || '',
+        spotifyUrl: r.spotify_url || r.spotifyUrl || '',
+        playerSource: r.player_source || r.playerSource || 'auto',
         order: Number(r.order) || 1,
       }));
     }
@@ -326,6 +331,7 @@ export async function getTracks(): Promise<TrackItem[]> {
           order: Number(r.order) || 1,
           streamUrl,
           audioFile: r.audio_file || '',
+          externalUrl: r.external_url || r.externalUrl || '',
         };
       });
     }
