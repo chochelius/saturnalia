@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import AmbientWebs from '../components/ui/AmbientWebs.astro';
+import StickyBottomPlayer from '../components/ui/StickyBottomPlayer';
 
 interface Props {
   title?: string;
@@ -62,5 +63,6 @@ const {
   <body class="bg-[#020202] text-foreground relative min-h-screen">
     <AmbientWebs />
     <slot />
+    <StickyBottomPlayer client:load lang={lang} />
   </body>
 </html>

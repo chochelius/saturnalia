@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   pb,
   type Album,
@@ -28,6 +28,13 @@ import {
   Camera,
   Edit2,
   X,
+  Headphones,
+  Play,
+  Pause,
+  Volume2,
+  ChevronUp,
+  ChevronDown,
+  Disc,
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -38,7 +45,7 @@ export default function AdminDashboard() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Estados de datos
-  const [activeTab, setActiveTab] = useState<'hero' | 'bio' | 'albums' | 'gallery' | 'links' | 'socials'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'bio' | 'albums' | 'tracks' | 'gallery' | 'links' | 'socials'>('hero');
   const [siteTexts, setSiteTexts] = useState<any>(null);
   const [siteTextsId, setSiteTextsId] = useState<string>('');
 
@@ -49,6 +56,7 @@ export default function AdminDashboard() {
   const [socialsId, setSocialsId] = useState<string>('');
 
   const [albums, setAlbums] = useState<any[]>([]);
+  const [tracks, setTracks] = useState<any[]>([]);
   const [gallery, setGallery] = useState<any[]>([]);
   const [links, setLinks] = useState<any[]>([]);
 
@@ -66,6 +74,14 @@ export default function AdminDashboard() {
   const [previewUrl, setPreviewUrl] = useState<string>('');
   // Modal para nuevo o editar enlace
   const [editingLink, setEditingLink] = useState<any | null>(null);
+
+  // Estados para Pistas de Audio (Tracks)
+  const [selectedAlbumFilter, setSelectedAlbumFilter] = useState<string>('all');
+  const [editingTrack, setEditingTrack] = useState<any | null>(null);
+  const [selectedAudioFile, setSelectedAudioFile] = useState<File | null>(null);
+  const [audioPreviewUrl, setAudioPreviewUrl] = useState<string>('');
+  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+  const adminAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Comprobar y validar autenticación al montar
   useEffect(() => {
@@ -211,6 +227,10 @@ export default function AdminDashboard() {
       const albList = await pb.collection('albums').getFullList({ sort: 'order', requestKey: null }).catch(() => []);
       setAlbums(albList);
 
+      // 4.1 Pistas de Audio (Tracks)
+      const trkList = await pb.collection('tracks').getFullList({ sort: 'order', requestKey: null }).catch(() => []);
+      setTracks(trkList);
+
       // 5. Galería fotográfica
       const galList = await pb.collection('gallery').getFullList({ sort: 'order', requestKey: null }).catch(() => []);
       setGallery(galList);
@@ -307,6 +327,8 @@ export default function AdminDashboard() {
         stream_url: editingAlbum.stream_url || '',
         audio_url: editingAlbum.audio_url || '',
         bandcamp_embed_id: editingAlbum.bandcamp_embed_id || '',
+        spotify_url: editingAlbum.spotify_url || '',
+        player_source: editingAlbum.player_source || 'auto',
         order: Number(editingAlbum.order) || 1,
       };
 
@@ -396,6 +418,147 @@ export default function AdminDashboard() {
       showNotification('success', `Foto eliminada exitosamente.`);
     } catch (err: any) {
       handleAuthError(err, 'eliminar foto de la galería');
+    }
+  };
+
+  // ==========================================
+  // HANDLERS: PISTAS / AUDIO TRACKS (CLOUDFLARE R2)
+  // ==========================================
+  const getTrackAudioUrl = (track: any) => {
+    if (track.audio_file) {
+      return `https://media.saturnalia999.art/${track.collectionId || 'pbc_327047008'}/${track.id}/${track.audio_file}`;
+    }
+    return track.audio_url || '';
+  };
+
+  const handleAudioFileSelect = (file: File) => {
+    setSelectedAudioFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setAudioPreviewUrl(objectUrl);
+
+    // Auto-detectar duración
+    const tempAudio = new Audio(objectUrl);
+    tempAudio.addEventListener('loadedmetadata', () => {
+      const sec = Math.round(tempAudio.duration);
+      if (sec && !isNaN(sec)) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        const durStr = `${m}:${s < 10 ? '0' : ''}${s}`;
+        setEditingTrack((prev: any) => prev ? { ...prev, duration: durStr } : prev);
+      }
+    });
+  };
+
+  const handleTogglePlayPreview = (track: any) => {
+    if (playingTrackId === track.id) {
+      if (adminAudioRef.current) {
+        adminAudioRef.current.pause();
+      }
+      setPlayingTrackId(null);
+    } else {
+      const url = getTrackAudioUrl(track);
+      if (!url) {
+        showNotification('error', 'Esta pista no tiene archivo de audio ni URL asignada.');
+        return;
+      }
+      if (adminAudioRef.current) {
+        adminAudioRef.current.src = url;
+        adminAudioRef.current.play().catch((err) => {
+          showNotification('error', `Error al reproducir audio: ${err.message}`);
+        });
+      }
+      setPlayingTrackId(track.id);
+    }
+  };
+
+  const handleSaveTrack = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTrack) return;
+    if (!editingTrack.album) {
+      showNotification('error', 'Debes seleccionar un álbum para asignar esta pista.');
+      return;
+    }
+    setIsSaving(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('title', editingTrack.title || 'Sin título');
+      formData.append('album', editingTrack.album);
+      formData.append('track_number', String(editingTrack.track_number || 1));
+      formData.append('order', String(editingTrack.order || 1));
+      formData.append('duration', editingTrack.duration || '');
+
+      if (editingTrack.audio_url) {
+        formData.append('audio_url', editingTrack.audio_url);
+      }
+      if (editingTrack.external_url) {
+        formData.append('external_url', editingTrack.external_url);
+      }
+      if (selectedAudioFile) {
+        formData.append('audio_file', selectedAudioFile);
+      }
+
+      if (editingTrack.id) {
+        await pb.collection('tracks').update(editingTrack.id, formData);
+        showNotification('success', `Pista "${editingTrack.title}" actualizada.`);
+      } else {
+        await pb.collection('tracks').create(formData);
+        showNotification('success', `Pista "${editingTrack.title}" subida exitosamente a Cloudflare R2.`);
+      }
+
+      setEditingTrack(null);
+      setSelectedAudioFile(null);
+      setAudioPreviewUrl('');
+      const updatedList = await pb.collection('tracks').getFullList({ sort: 'order', requestKey: null });
+      setTracks(updatedList);
+    } catch (err: any) {
+      handleAuthError(err, 'guardar pista');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteTrack = async (id: string, title: string) => {
+    if (!window.confirm(`¿Seguro que deseas eliminar la pista "${title}"? Se borrará de Cloudflare R2.`)) return;
+    try {
+      if (playingTrackId === id && adminAudioRef.current) {
+        adminAudioRef.current.pause();
+        setPlayingTrackId(null);
+      }
+      await pb.collection('tracks').delete(id);
+      setTracks(tracks.filter((t) => t.id !== id));
+      showNotification('success', `Pista "${title}" eliminada de PocketBase y R2.`);
+    } catch (err: any) {
+      handleAuthError(err, 'eliminar pista');
+    }
+  };
+
+  const handleMoveTrackOrder = async (track: any, direction: 'up' | 'down') => {
+    const albumTracks = tracks
+      .filter((t) => t.album === track.album)
+      .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+
+    const index = albumTracks.findIndex((t) => t.id === track.id);
+    if (index === -1) return;
+
+    const swapIndex = direction === 'up' ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= albumTracks.length) return;
+
+    const currentTrack = albumTracks[index];
+    const targetTrack = albumTracks[swapIndex];
+
+    const currentOrder = Number(currentTrack.order) || (index + 1);
+    const targetOrder = Number(targetTrack.order) || (swapIndex + 1);
+
+    try {
+      await pb.collection('tracks').update(currentTrack.id, { order: targetOrder });
+      await pb.collection('tracks').update(targetTrack.id, { order: currentOrder });
+
+      const updated = await pb.collection('tracks').getFullList({ sort: 'order', requestKey: null });
+      setTracks(updated);
+      showNotification('success', 'Orden actualizado.');
+    } catch (err: any) {
+      handleAuthError(err, 'reordenar pista');
     }
   };
 
@@ -729,6 +892,18 @@ export default function AdminDashboard() {
           </button>
 
           <button
+            onClick={() => setActiveTab('tracks')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs uppercase tracking-wider whitespace-nowrap border-b-2 transition-all ${
+              activeTab === 'tracks'
+                ? 'border-primary text-primary font-bold bg-primary/10'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-[#111]'
+            }`}
+          >
+            <Headphones className="w-4 h-4" />
+            <span>Pistas / Audio ({tracks.length})</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('gallery')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs uppercase tracking-wider whitespace-nowrap border-b-2 transition-all ${
               activeTab === 'gallery'
@@ -1034,6 +1209,8 @@ export default function AdminDashboard() {
                     stream_url: 'https://saturnalia999.bandcamp.com',
                     audio_url: '',
                     bandcamp_embed_id: '',
+                    spotify_url: '',
+                    player_source: 'auto',
                     order: albums.length + 1,
                   })
                 }
@@ -1217,6 +1394,435 @@ export default function AdminDashboard() {
                       >
                         <Save className="w-4 h-4" />
                         <span>Guardar Álbum</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB: PISTAS DE AUDIO / TRACKS (CLOUDFLARE R2) */}
+        {/* ========================================================= */}
+        {activeTab === 'tracks' && (
+          <div className="space-y-6">
+            {/* Reproductor oculto de audio para preescucha en el panel */}
+            <audio ref={adminAudioRef} onEnded={() => setPlayingTrackId(null)} className="hidden" />
+
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-primary/20">
+              <div>
+                <h2 className="text-base font-bold text-primary uppercase flex items-center gap-2">
+                  <Headphones className="w-5 h-5 text-primary" />
+                  <span>Pistas de Audio // Cloudflare R2 Streaming</span>
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Gestiona las canciones completas por álbum alojadas en Cloudflare R2 y servidas vía <code className="text-primary font-mono text-[11px]">media.saturnalia999.art</code>.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Selector / Filtro por Álbum */}
+                <div className="flex items-center gap-2 bg-[#111] border border-primary/30 rounded px-2.5 py-1.5">
+                  <Disc className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[11px] uppercase text-muted-foreground">Filtrar por:</span>
+                  <select
+                    value={selectedAlbumFilter}
+                    onChange={(e) => setSelectedAlbumFilter(e.target.value)}
+                    className="bg-transparent text-xs text-foreground font-semibold focus:outline-none cursor-pointer"
+                  >
+                    <option value="all" className="bg-[#111] text-foreground">
+                      Todos los Álbumes ({tracks.length} temas)
+                    </option>
+                    {albums.map((alb) => {
+                      const count = tracks.filter((t) => t.album === alb.id).length;
+                      return (
+                        <option key={alb.id} value={alb.id} className="bg-[#111] text-foreground">
+                          {alb.title} ({count})
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const initialAlbum = selectedAlbumFilter !== 'all' ? selectedAlbumFilter : (albums[0]?.id || '');
+                    const albumTracks = tracks.filter((t) => t.album === initialAlbum);
+                    setEditingTrack({
+                      title: '',
+                      album: initialAlbum,
+                      track_number: albumTracks.length + 1,
+                      order: albumTracks.length + 1,
+                      duration: '',
+                      audio_url: '',
+                    });
+                    setSelectedAudioFile(null);
+                    setAudioPreviewUrl('');
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold text-xs uppercase tracking-widest rounded hover:bg-primary/90 transition-all shadow-md shadow-primary/20"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Nueva Pista</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Barra de estado cuando se está reproduciendo una preescucha */}
+            {playingTrackId && (
+              <div className="p-3 bg-primary/10 border border-primary/40 rounded flex items-center justify-between text-xs text-primary animate-pulse">
+                <div className="flex items-center gap-2">
+                  <Volume2 className="w-4 h-4 animate-bounce shrink-0" />
+                  <span>
+                    Reproduciendo preescucha en vivo desde Cloudflare R2: <strong>{tracks.find((t) => t.id === playingTrackId)?.title || 'Pista'}</strong>
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    if (adminAudioRef.current) adminAudioRef.current.pause();
+                    setPlayingTrackId(null);
+                  }}
+                  className="px-3 py-1 bg-primary text-black rounded font-bold text-[11px] uppercase tracking-wider hover:bg-primary/90"
+                >
+                  Detener
+                </button>
+              </div>
+            )}
+
+            {/* Lista de Pistas */}
+            {(() => {
+              const filteredTracks = tracks.filter(
+                (t) => selectedAlbumFilter === 'all' || t.album === selectedAlbumFilter
+              ).sort((a, b) => {
+                if (selectedAlbumFilter === 'all') {
+                  const albumDiff = (a.album || '').localeCompare(b.album || '');
+                  if (albumDiff !== 0) return albumDiff;
+                }
+                return (Number(a.order) || 0) - (Number(b.order) || 0);
+              });
+
+              if (filteredTracks.length === 0) {
+                return (
+                  <div className="p-12 text-center border-2 border-dashed border-primary/20 rounded-lg space-y-3">
+                    <Headphones className="w-10 h-10 text-muted-foreground/40 mx-auto" />
+                    <p className="text-sm text-muted-foreground">
+                      No hay canciones registradas en este álbum todavía.
+                    </p>
+                    <button
+                      onClick={() => {
+                        const initialAlbum = selectedAlbumFilter !== 'all' ? selectedAlbumFilter : (albums[0]?.id || '');
+                        setEditingTrack({
+                          title: '',
+                          album: initialAlbum,
+                          track_number: 1,
+                          order: 1,
+                          duration: '',
+                          audio_url: '',
+                        });
+                        setSelectedAudioFile(null);
+                        setAudioPreviewUrl('');
+                      }}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/40 text-primary text-xs uppercase tracking-wider rounded hover:bg-primary hover:text-black transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Subir Primera Pista</span>
+                    </button>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="bg-[#080808] border border-primary/30 rounded-lg overflow-hidden">
+                  <div className="divide-y divide-primary/10">
+                    {filteredTracks.map((trk, idx) => {
+                      const albumObj = albums.find((a) => a.id === trk.album);
+                      const isPlaying = playingTrackId === trk.id;
+                      const hasAudio = !!(trk.audio_file || trk.audio_url);
+
+                      return (
+                        <div
+                          key={trk.id}
+                          className={`p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/[0.02] transition-colors ${
+                            isPlaying ? 'bg-primary/5 border-l-2 border-l-primary' : ''
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            {/* Botón Play / Pause Preescucha */}
+                            <button
+                              onClick={() => handleTogglePlayPreview(trk)}
+                              disabled={!hasAudio}
+                              className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border transition-all ${
+                                isPlaying
+                                  ? 'bg-primary text-black border-primary shadow-lg shadow-primary/30'
+                                  : hasAudio
+                                  ? 'bg-[#151515] hover:bg-primary hover:text-black text-primary border-primary/40'
+                                  : 'bg-[#111] text-muted-foreground/30 border-transparent cursor-not-allowed'
+                              }`}
+                              title={hasAudio ? (isPlaying ? 'Pausar' : 'Escuchar') : 'Sin archivo de audio'}
+                            >
+                              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+                            </button>
+
+                            {/* Número y Título */}
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-mono text-xs font-bold text-primary/70">
+                                  #{String(trk.track_number || idx + 1).padStart(2, '0')}
+                                </span>
+                                <h3 className="text-sm font-bold text-foreground truncate">
+                                  {trk.title}
+                                </h3>
+                                {trk.duration && (
+                                  <span className="font-mono text-[11px] text-muted-foreground/70 bg-[#151515] px-1.5 py-0.5 rounded border border-primary/10">
+                                    {trk.duration}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground flex-wrap">
+                                {albumObj && (
+                                  <span className="text-primary/90 font-medium">
+                                    Disco: {albumObj.title}
+                                  </span>
+                                )}
+                                <span>•</span>
+                                {trk.audio_file ? (
+                                  <span className="text-emerald-400 font-mono text-[10px] bg-emerald-950/40 border border-emerald-500/30 px-1.5 py-0.2 rounded">
+                                    Cloudflare R2 ({trk.audio_file})
+                                  </span>
+                                ) : trk.audio_url ? (
+                                  <span className="text-cyan-400 font-mono text-[10px] bg-cyan-950/40 border border-cyan-500/30 px-1.5 py-0.2 rounded">
+                                    URL Externa
+                                  </span>
+                                ) : (
+                                  <span className="text-amber-400 font-mono text-[10px] bg-amber-950/40 border border-amber-500/30 px-1.5 py-0.2 rounded">
+                                    Pendiente de audio
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Acciones y Reordenamiento */}
+                          <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+                            {/* Subir / Bajar Orden */}
+                            <button
+                              onClick={() => handleMoveTrackOrder(trk, 'up')}
+                              className="p-1.5 bg-[#111] hover:bg-[#1a1a1a] text-muted-foreground hover:text-foreground rounded border border-primary/20"
+                              title="Subir posición"
+                            >
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleMoveTrackOrder(trk, 'down')}
+                              className="p-1.5 bg-[#111] hover:bg-[#1a1a1a] text-muted-foreground hover:text-foreground rounded border border-primary/20"
+                              title="Bajar posición"
+                            >
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Editar */}
+                            <button
+                              onClick={() => {
+                                setEditingTrack({ ...trk });
+                                setSelectedAudioFile(null);
+                                setAudioPreviewUrl(getTrackAudioUrl(trk));
+                              }}
+                              className="flex items-center gap-1 py-1.5 px-2.5 bg-[#151515] hover:bg-primary hover:text-black text-xs font-semibold rounded border border-primary/30 transition-colors"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">Editar</span>
+                            </button>
+
+                            {/* Eliminar */}
+                            <button
+                              onClick={() => handleDeleteTrack(trk.id, trk.title)}
+                              className="p-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 rounded border border-red-500/30 transition-colors"
+                              title="Eliminar pista"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Modal para Crear / Editar Pista */}
+            {editingTrack && (
+              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                <div className="bg-[#080808] border-2 border-primary/60 p-6 rounded-lg max-w-lg w-full space-y-4 shadow-2xl relative my-8">
+                  <div className="flex items-center justify-between pb-2 border-b border-primary/20">
+                    <h3 className="text-sm font-bold text-primary uppercase flex items-center gap-2">
+                      <Headphones className="w-4 h-4 text-primary" />
+                      <span>{editingTrack.id ? 'Editar Pista' : 'Subir Nueva Canción a R2'}</span>
+                    </h3>
+                    <button
+                      onClick={() => {
+                        setEditingTrack(null);
+                        setSelectedAudioFile(null);
+                        setAudioPreviewUrl('');
+                      }}
+                      className="text-muted-foreground hover:text-foreground text-sm"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleSaveTrack} className="space-y-4">
+                    {/* Álbum Destino */}
+                    <div>
+                      <label className="block text-xs uppercase text-muted-foreground mb-1">
+                        Álbum Destino *
+                      </label>
+                      <select
+                        required
+                        value={editingTrack.album}
+                        onChange={(e) => setEditingTrack({ ...editingTrack, album: e.target.value })}
+                        className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                      >
+                        <option value="" disabled>Selecciona un álbum...</option>
+                        {albums.map((alb) => (
+                          <option key={alb.id} value={alb.id} className="bg-[#111]">
+                            {alb.title}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Título de la Canción */}
+                    <div>
+                      <label className="block text-xs uppercase text-muted-foreground mb-1">
+                        Título de la Canción *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={editingTrack.title}
+                        onChange={(e) => setEditingTrack({ ...editingTrack, title: e.target.value })}
+                        placeholder="Ej: Double Faced"
+                        className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">
+                          Nº Pista
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editingTrack.track_number}
+                          onChange={(e) => setEditingTrack({ ...editingTrack, track_number: e.target.value })}
+                          className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">
+                          Duración
+                        </label>
+                        <input
+                          type="text"
+                          value={editingTrack.duration || ''}
+                          onChange={(e) => setEditingTrack({ ...editingTrack, duration: e.target.value })}
+                          placeholder="Ej: 03:45"
+                          className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">
+                          Orden
+                        </label>
+                        <input
+                          type="number"
+                          value={editingTrack.order}
+                          onChange={(e) => setEditingTrack({ ...editingTrack, order: e.target.value })}
+                          className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Subida de Archivo de Audio (Cloudflare R2) */}
+                    <div>
+                      <label className="block text-xs uppercase text-muted-foreground mb-1">
+                        Archivo de Audio (MP3, WAV, FLAC, OGG hasta 50MB)
+                      </label>
+                      <div className="border border-dashed border-primary/40 rounded-lg p-4 bg-[#111] text-center hover:border-primary transition-colors">
+                        <input
+                          type="file"
+                          id="track-file-input"
+                          accept="audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/ogg,audio/flac,audio/x-flac"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleAudioFileSelect(e.target.files[0]);
+                            }
+                          }}
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="track-file-input"
+                          className="cursor-pointer flex flex-col items-center gap-2"
+                        >
+                          <UploadCloud className="w-8 h-8 text-primary animate-pulse" />
+                          <span className="text-xs font-semibold text-primary uppercase">
+                            {selectedAudioFile
+                              ? `Seleccionado: ${selectedAudioFile.name} (${(selectedAudioFile.size / 1024 / 1024).toFixed(1)} MB)`
+                              : editingTrack.audio_file
+                              ? `Archivo actual: ${editingTrack.audio_file} (Clic para cambiar)`
+                              : 'Haz clic para seleccionar el archivo de audio'}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            Se alojará en Cloudflare R2 con CDN global de alta velocidad
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Vista previa de audio en el modal si existe */}
+                      {audioPreviewUrl && (
+                        <div className="mt-2 p-2 bg-black border border-primary/20 rounded">
+                          <audio src={audioPreviewUrl} controls className="w-full h-8" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* URL Externa alternativa */}
+                    <div>
+                      <label className="block text-xs uppercase text-muted-foreground mb-1">
+                        O URL de Audio Externa (Opcional)
+                      </label>
+                      <input
+                        type="url"
+                        value={editingTrack.audio_url || ''}
+                        onChange={(e) => setEditingTrack({ ...editingTrack, audio_url: e.target.value })}
+                        placeholder="https://.../stream.mp3"
+                        className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 pt-3 border-t border-primary/20">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingTrack(null);
+                          setSelectedAudioFile(null);
+                          setAudioPreviewUrl('');
+                        }}
+                        className="px-4 py-2 bg-[#151515] hover:bg-[#202020] text-xs uppercase rounded"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSaving}
+                        className="px-5 py-2 bg-primary text-black font-bold text-xs uppercase rounded hover:bg-primary/90 flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span>{isSaving ? 'Subiendo a R2...' : 'Guardar Pista'}</span>
                       </button>
                     </div>
                   </form>

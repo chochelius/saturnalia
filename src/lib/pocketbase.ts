@@ -5,6 +5,7 @@ import fallbackSocials from '../data/fallback/socials.json';
 import fallbackLinks from '../data/fallback/links.json';
 import fallbackTexts from '../data/fallback/texts.json';
 import fallbackGallery from '../data/fallback/gallery.json';
+import fallbackTracks from '../data/fallback/tracks.json';
 
 export function getPocketBaseUrl(): string {
   if (typeof window !== 'undefined') {
@@ -65,6 +66,17 @@ export interface GalleryItem {
   image: string;
   imageFile?: string;
   order: number;
+}
+
+export interface TrackItem {
+  id: string;
+  albumId: string;
+  title: string;
+  trackNumber: number;
+  duration?: string;
+  order: number;
+  streamUrl: string;
+  audioFile?: string;
 }
 
 export interface SiteTexts {
@@ -285,6 +297,43 @@ export async function getGallery(): Promise<GalleryItem[]> {
   }
 
   return (fallbackGallery as GalleryItem[]).sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Obtener pistas de audio (tracks) desde PocketBase con fallback automático (Cloudflare R2 CDN)
+ */
+export async function getTracks(): Promise<TrackItem[]> {
+  try {
+    const records = await withFastTimeout(
+      pb.collection('tracks').getFullList({
+        sort: 'order',
+        requestKey: null,
+      })
+    );
+
+    if (records && records.length > 0) {
+      return records.map((r: any) => {
+        let streamUrl = r.audio_url || '';
+        if (r.audio_file) {
+          streamUrl = `https://media.saturnalia999.art/${r.collectionId || 'pbc_327047008'}/${r.id}/${r.audio_file}`;
+        }
+        return {
+          id: r.id,
+          albumId: r.album,
+          title: r.title,
+          trackNumber: Number(r.track_number) || 1,
+          duration: r.duration || '',
+          order: Number(r.order) || 1,
+          streamUrl,
+          audioFile: r.audio_file || '',
+        };
+      });
+    }
+  } catch {
+    // Fallback
+  }
+
+  return (fallbackTracks as TrackItem[]).sort((a, b) => a.order - b.order);
 }
 
 /**

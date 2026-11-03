@@ -216,6 +216,32 @@ async function sync() {
     console.log(`  ✓ gallery.json actualizado (${galleryData.length} imágenes descargadas).`);
   }
 
+  // 7. Pistas musicales / Tracks
+  console.log('🎵 Sincronizando pistas de audio (Cloudflare R2)...');
+  const tracksItems = await fetchCollection('tracks');
+  if (tracksItems) {
+    const tracksData = tracksItems
+      .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0))
+      .map((r) => {
+        let streamUrl = r.audio_url || '';
+        if (r.audio_file) {
+          streamUrl = `https://media.saturnalia999.art/${r.collectionId || 'pbc_327047008'}/${r.id}/${r.audio_file}`;
+        }
+        return {
+          id: r.id,
+          albumId: r.album,
+          title: r.title,
+          trackNumber: Number(r.track_number) || 1,
+          duration: r.duration || '',
+          order: Number(r.order) || 1,
+          streamUrl,
+          audioFile: r.audio_file || '',
+        };
+      });
+    fs.writeFileSync(path.join(FALLBACK_DIR, 'tracks.json'), JSON.stringify(tracksData, null, 2), 'utf-8');
+    console.log(`  ✓ tracks.json actualizado (${tracksData.length} pistas).`);
+  }
+
   console.log('\n✨ Sincronización completada. Archivos fallback actualizados para GitHub Pages.\n');
 }
 

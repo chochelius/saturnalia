@@ -3,9 +3,10 @@ import Layout from '../../layouts/Layout.astro';
 import { Header } from '../../components/layout/Header';
 import AlbumSection from '../../components/sections/AlbumSection.astro';
 import Footer from '../../components/layout/Footer.astro';
-import { getAlbums, getSocials, getSiteTexts, buildTranslation } from '../../lib/pocketbase';
+import { getAlbums, getTracks, getSocials, getSiteTexts, buildTranslation } from '../../lib/pocketbase';
 
 const albums = await getAlbums();
+const tracks = await getTracks();
 const socials = await getSocials();
 const siteTexts = await getSiteTexts();
 
@@ -37,6 +38,7 @@ const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia9
         title={t.albumSection.title}
         buyNowText={t.albumSection.buyNow}
         albums={albums}
+        tracks={tracks}
         lang="es"
       />
     </main>

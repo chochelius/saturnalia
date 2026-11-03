@@ -1,5 +1,5 @@
 ---
-import type { Album } from '../../lib/pocketbase';
+import type { Album, TrackItem } from '../../lib/pocketbase';
 import { GlitchText } from "../GlitchText";
 import AudioPlayer from "../ui/AudioPlayer";
 
@@ -7,10 +7,11 @@ interface Props {
   title: string;
   buyNowText: string;
   albums: Album[];
+  tracks?: TrackItem[];
   lang?: 'en' | 'es';
 }
 
-const { title, buyNowText, albums, lang = 'en' } = Astro.props;
+const { title, buyNowText, albums, tracks = [], lang = 'en' } = Astro.props;
 ---
 
 <section id="albums" class="py-20 sm:py-32">
@@ -43,11 +44,13 @@ const { title, buyNowText, albums, lang = 'en' } = Astro.props;
               </span>
             </div>
 
-            {/* Reproductor de audio híbrido embebido */}
+            {/* Reproductor de audio y tracklist conectado con Cloudflare R2 */}
             <div class="px-6 pb-4">
               <AudioPlayer
                 client:visible
                 title={album.title}
+                album={album}
+                tracks={tracks.filter((t) => t.albumId === album.id)}
                 audioUrl={album.audioUrl}
                 streamUrl={album.streamUrl}
                 bandcampEmbedId={album.bandcampEmbedId}
