@@ -81,28 +81,29 @@ export const Header = ({
   const targetLangLabel = lang === "en" ? "ES" : "EN";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#020202]/90 backdrop-blur-lg border-b border-b-primary/30">
-      <div className="container mx-auto px-4 h-20 flex justify-between items-center">
-        <a href={homeHref} onClick={() => setIsOpen(false)} className="z-10 flex items-center gap-3 group">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#020202]/95 backdrop-blur-lg border-b border-b-primary/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex justify-between items-center gap-2 sm:gap-4">
+        {/* Logo & Marca */}
+        <a href={homeHref} onClick={() => setIsOpen(false)} className="z-10 flex items-center gap-2.5 sm:gap-3 shrink-0 group">
           <img
             src="/logo.jpg"
             alt="Saturnalia999 Logo"
-            className="w-9 h-9 sm:w-10 sm:h-10 object-cover rounded-none border border-primary/40 group-hover:border-primary group-hover:shadow-[0_0_12px_rgba(28,161,229,0.7)] transition-all duration-300"
+            className="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-none border border-primary/40 group-hover:border-primary group-hover:shadow-[0_0_12px_rgba(28,161,229,0.7)] transition-all duration-300 shrink-0"
           />
-          <span className="text-2xl sm:text-3xl font-headline font-bold text-glow text-primary uppercase tracking-widest block">
+          <span className="text-xl sm:text-2xl font-headline font-bold text-glow text-primary uppercase tracking-widest block whitespace-nowrap">
             Saturnalia999
           </span>
         </a>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        {/* Desktop Navigation (Visible desde lg: 1024px) */}
+        <nav className="hidden lg:flex items-center gap-3 xl:gap-5 shrink-0">
           {navLinks.map((link) => {
             const active = isLinkActive(link.href);
             return (
               <a
                 key={link.href}
                 href={link.href}
-                className={`font-headline text-xl uppercase transition-colors duration-300 ${
+                className={`font-headline text-sm xl:text-base uppercase tracking-wider transition-colors duration-300 whitespace-nowrap ${
                   active
                     ? "text-primary font-bold text-glow border-b-2 border-primary pb-0.5"
                     : "text-muted-foreground hover:text-accent hover:text-glow"
@@ -115,13 +116,13 @@ export const Header = ({
         </nav>
 
         {/* Social and Language Toggler for Desktop */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden lg:flex items-center gap-2.5 xl:gap-3.5 shrink-0">
           <a
             href={targetLangUrl}
-            className="flex items-center space-x-1.5 px-3 py-1.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase text-sm transition-colors duration-300 rounded-none"
+            className="flex items-center space-x-1.5 px-2.5 py-1 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase text-xs transition-colors duration-300 rounded-none whitespace-nowrap"
             aria-label={`Switch to ${targetLangLabel}`}
           >
-            <Languages className="w-4 h-4" />
+            <Languages className="w-3.5 h-3.5" />
             <span className="font-bold">{targetLangLabel}</span>
           </a>
           <a
@@ -130,7 +131,7 @@ export const Header = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            <SpotifyIcon className="w-7 h-7 text-primary hover:text-accent transition-colors duration-300" />
+            <SpotifyIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary hover:text-accent transition-colors duration-300" />
           </a>
           <a
             href={youtubeUrl}
@@ -138,7 +139,7 @@ export const Header = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            <YouTubeIcon className="w-7 h-7 text-primary hover:text-accent transition-colors duration-300" />
+            <YouTubeIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary hover:text-accent transition-colors duration-300" />
           </a>
           <a
             href={bandcampUrl}
@@ -147,16 +148,24 @@ export const Header = ({
             rel="noopener noreferrer"
             title="Bandcamp Releases"
           >
-            <BandcampIcon className="w-7 h-7 text-primary hover:text-accent transition-colors duration-300" />
+            <BandcampIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary hover:text-accent transition-colors duration-300" />
           </a>
         </div>
 
-        {/* Mobile Navigation Trigger */}
-        <div className="md:hidden">
+        {/* Mobile Navigation Trigger (Visible bajo lg) */}
+        <div className="flex items-center gap-2.5 lg:hidden">
+          <a
+            href={targetLangUrl}
+            className="flex items-center space-x-1 px-2.5 py-1 border border-primary/40 hover:border-primary text-primary font-headline uppercase text-xs transition-colors rounded-none"
+            aria-label={`Switch to ${targetLangLabel}`}
+          >
+            <Languages className="w-3.5 h-3.5" />
+            <span className="font-bold">{targetLangLabel}</span>
+          </a>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open menu">
-                <Menu className="h-8 w-8 text-primary icon-glow" />
+              <Button variant="ghost" size="icon" aria-label="Open menu" className="hover:bg-primary/10">
+                <Menu className="h-7 w-7 text-primary icon-glow" />
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
