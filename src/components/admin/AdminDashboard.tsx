@@ -35,7 +35,9 @@ import {
   ChevronUp,
   ChevronDown,
   Disc,
+  BookOpen,
 } from 'lucide-react';
+import { RichTextEditor } from './RichTextEditor';
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -45,7 +47,7 @@ export default function AdminDashboard() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Estados de datos
-  const [activeTab, setActiveTab] = useState<'hero' | 'bio' | 'albums' | 'tracks' | 'gallery' | 'links' | 'socials'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'bio' | 'albums' | 'tracks' | 'gallery' | 'links' | 'socials' | 'blog'>('hero');
   const [siteTexts, setSiteTexts] = useState<any>(null);
   const [siteTextsId, setSiteTextsId] = useState<string>('');
 
@@ -59,6 +61,10 @@ export default function AdminDashboard() {
   const [tracks, setTracks] = useState<any[]>([]);
   const [gallery, setGallery] = useState<any[]>([]);
   const [links, setLinks] = useState<any[]>([]);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [editingBlogPost, setEditingBlogPost] = useState<any | null>(null);
+  const [blogCoverFile, setBlogCoverFile] = useState<File | null>(null);
+  const [blogPreviewUrl, setBlogPreviewUrl] = useState<string>('');
 
   // Estados de interfaz y feedback
   const [isSaving, setIsSaving] = useState(false);
@@ -238,6 +244,10 @@ export default function AdminDashboard() {
       // 6. Enlaces
       const lnkList = await pb.collection('links').getFullList({ sort: 'order', requestKey: null }).catch(() => []);
       setLinks(lnkList);
+
+      // 7. Blog / Transmisiones
+      const blogList = await pb.collection('blog_posts').getFullList({ sort: '-published_at,-order', requestKey: null }).catch(() => []);
+      setBlogPosts(blogList);
     } catch (err: any) {
       showNotification('error', `Error cargando datos: ${err.message}`);
     }
@@ -607,6 +617,72 @@ export default function AdminDashboard() {
     }
   };
 
+  // Guardar Artículo del Blog (Crear o Editar)
+  const handleSaveBlogPost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBlogPost) return;
+    setIsSaving(true);
+
+    try {
+      // Auto-generar slug si está vacío
+      let safeSlug = (editingBlogPost.slug || '').trim();
+      if (!safeSlug) {
+        safeSlug = (editingBlogPost.title_en || editingBlogPost.title_es || 'post')
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_-]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      }
+
+      const formData = new FormData();
+      formData.append('title_en', editingBlogPost.title_en || '');
+      formData.append('title_es', editingBlogPost.title_es || editingBlogPost.title_en || '');
+      formData.append('slug', safeSlug);
+      formData.append('excerpt_en', editingBlogPost.excerpt_en || '');
+      formData.append('excerpt_es', editingBlogPost.excerpt_es || '');
+      formData.append('content_en', editingBlogPost.content_en || '');
+      formData.append('content_es', editingBlogPost.content_es || '');
+      formData.append('tags', typeof editingBlogPost.tags === 'string' ? editingBlogPost.tags : (editingBlogPost.tags || []).join(', '));
+      formData.append('is_featured', editingBlogPost.is_featured ? 'true' : 'false');
+      formData.append('status', editingBlogPost.status || 'published');
+      formData.append('published_at', editingBlogPost.published_at || new Date().toISOString());
+      formData.append('order', String(Number(editingBlogPost.order) || 1));
+
+      if (blogCoverFile) {
+        formData.append('cover_image', blogCoverFile);
+      }
+
+      if (editingBlogPost.id) {
+        await pb.collection('blog_posts').update(editingBlogPost.id, formData);
+        showNotification('success', `Artículo "${editingBlogPost.title_es || editingBlogPost.title_en}" actualizado.`);
+      } else {
+        await pb.collection('blog_posts').create(formData);
+        showNotification('success', `Artículo "${editingBlogPost.title_es || editingBlogPost.title_en}" creado.`);
+      }
+
+      setEditingBlogPost(null);
+      setBlogCoverFile(null);
+      setBlogPreviewUrl('');
+      const updatedBlog = await pb.collection('blog_posts').getFullList({ sort: '-published_at,-order', requestKey: null });
+      setBlogPosts(updatedBlog);
+    } catch (err: any) {
+      handleAuthError(err, 'guardar artículo del blog');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteBlogPost = async (id: string, title: string) => {
+    if (!window.confirm(`¿Seguro que deseas eliminar la transmisión/artículo "${title}"?`)) return;
+    try {
+      await pb.collection('blog_posts').delete(id);
+      setBlogPosts(blogPosts.filter((b) => b.id !== id));
+      showNotification('success', `Artículo "${title}" eliminado.`);
+    } catch (err: any) {
+      handleAuthError(err, 'eliminar artículo del blog');
+    }
+  };
+
   // Reconstrucción del sitio estático
   const handleRebuild = async () => {
     setIsRebuilding(true);
@@ -614,7 +690,12 @@ export default function AdminDashboard() {
     showNotification('success', 'Iniciando compilación en vivo en el servidor...');
 
     try {
-      const res = await fetch('/api/rebuild', { method: 'POST' });
+      const res = await fetch('/api/rebuild', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${pb.authStore.token}`,
+        },
+      });
       const data = await res.json();
 
       if (data.success) {
@@ -928,6 +1009,18 @@ export default function AdminDashboard() {
           </button>
 
           <button
+            onClick={() => setActiveTab('blog')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs uppercase tracking-wider whitespace-nowrap border-b-2 transition-all ${
+              activeTab === 'blog'
+                ? 'border-primary text-primary font-bold bg-primary/10'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-[#111]'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Blog / Transmisiones ({blogPosts.length})</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('socials')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs uppercase tracking-wider whitespace-nowrap border-b-2 transition-all ${
               activeTab === 'socials'
@@ -1113,15 +1206,14 @@ export default function AdminDashboard() {
                           </button>
                         )}
                       </div>
-                      <textarea
-                        rows={4}
+                      <RichTextEditor
                         value={p}
-                        onChange={(e) => {
+                        rows={3}
+                        onChange={(val) => {
                           const updated = [...bio.paragraphs_en];
-                          updated[idx] = e.target.value;
+                          updated[idx] = val;
                           setBio({ ...bio, paragraphs_en: updated });
                         }}
-                        className="w-full bg-[#111] border border-primary/20 rounded p-2.5 text-xs text-foreground focus:outline-none focus:border-primary resize-y"
                       />
                     </div>
                   ))}
@@ -1172,15 +1264,14 @@ export default function AdminDashboard() {
                           </button>
                         )}
                       </div>
-                      <textarea
-                        rows={4}
+                      <RichTextEditor
                         value={p}
-                        onChange={(e) => {
+                        rows={3}
+                        onChange={(val) => {
                           const updated = [...bio.paragraphs_es];
-                          updated[idx] = e.target.value;
+                          updated[idx] = val;
                           setBio({ ...bio, paragraphs_es: updated });
                         }}
-                        className="w-full bg-[#111] border border-primary/20 rounded p-2.5 text-xs text-foreground focus:outline-none focus:border-primary resize-y"
                       />
                     </div>
                   ))}
@@ -2662,6 +2753,299 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 8: BLOG / TRANSMISIONES */}
+        {/* ========================================================= */}
+        {activeTab === 'blog' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-primary/20">
+              <div>
+                <h2 className="text-base font-bold text-primary uppercase">Blog / Transmisiones ({blogPosts.length})</h2>
+                <p className="text-xs text-muted-foreground">Publica noticias, bitácora de sintetizadores, manifiestos y reportes sonoros.</p>
+              </div>
+              <button
+                onClick={() => {
+                  setEditingBlogPost({
+                    title_en: '',
+                    title_es: '',
+                    slug: '',
+                    excerpt_en: '',
+                    excerpt_es: '',
+                    content_en: '',
+                    content_es: '',
+                    tags: '',
+                    is_featured: false,
+                    status: 'published',
+                    order: blogPosts.length + 1,
+                  });
+                  setBlogCoverFile(null);
+                  setBlogPreviewUrl('');
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold text-xs uppercase tracking-widest rounded hover:bg-primary/90 transition-all shadow-md shadow-primary/20"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Nueva Transmisión</span>
+              </button>
+            </div>
+
+            {/* Listado de Artículos */}
+            {blogPosts.length === 0 ? (
+              <div className="p-8 text-center border border-dashed border-primary/30 rounded bg-[#080808]">
+                <BookOpen className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground uppercase">No hay artículos publicados todavía.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {blogPosts.map((post) => {
+                  const coverUrl = post.cover_image
+                    ? pb.files.getURL(post, post.cover_image)
+                    : (post.coverImage || '/logo.jpg');
+                  return (
+                    <div
+                      key={post.id}
+                      className="bg-[#080808] border border-primary/30 p-4 rounded-lg flex gap-4 items-start justify-between group hover:border-primary transition-all"
+                    >
+                      <div className="flex gap-3 min-w-0">
+                        <img
+                          src={coverUrl}
+                          alt={post.title_es || post.title_en}
+                          className="w-16 h-16 object-cover border border-primary/40 rounded shrink-0 bg-black"
+                        />
+                        <div className="min-w-0 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`text-[10px] px-2 py-0.5 uppercase font-bold rounded ${
+                                post.status === 'published' || !post.status
+                                  ? 'bg-primary/20 text-primary border border-primary/40'
+                                  : 'bg-yellow-900/30 text-yellow-300 border border-yellow-700/50'
+                              }`}
+                            >
+                              {post.status || 'published'}
+                            </span>
+                            {post.is_featured && (
+                              <span className="text-[10px] bg-accent/20 text-accent border border-accent/40 px-2 py-0.5 uppercase font-bold rounded">
+                                ★ Destacado
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="text-sm font-bold text-foreground truncate uppercase">
+                            {post.title_es || post.title_en}
+                          </h4>
+                          <p className="text-[11px] text-muted-foreground truncate">
+                            /{post.slug}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => {
+                            setEditingBlogPost(post);
+                            setBlogPreviewUrl(post.cover_image ? pb.files.getURL(post, post.cover_image) : '');
+                            setBlogCoverFile(null);
+                          }}
+                          className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded transition-colors"
+                          title="Editar artículo"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteBlogPost(post.id, post.title_es || post.title_en)}
+                          className="p-1.5 text-muted-foreground hover:text-red-400 hover:bg-red-950/40 rounded transition-colors"
+                          title="Eliminar artículo"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Modal para Crear o Editar Artículo del Blog */}
+            {editingBlogPost && (
+              <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="bg-[#080808] border border-primary/50 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-6 shadow-2xl">
+                  <div className="flex items-center justify-between pb-3 border-b border-primary/20">
+                    <h3 className="text-base font-bold text-primary uppercase">
+                      {editingBlogPost.id ? 'Editar Transmisión' : 'Nueva Transmisión en Blog'}
+                    </h3>
+                    <button
+                      onClick={() => setEditingBlogPost(null)}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleSaveBlogPost} className="space-y-5">
+                    {/* Títulos y Slug */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">Título (ES) *</label>
+                        <input
+                          type="text"
+                          required
+                          value={editingBlogPost.title_es || ''}
+                          onChange={(e) => setEditingBlogPost({ ...editingBlogPost, title_es: e.target.value })}
+                          className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">Título (EN) *</label>
+                        <input
+                          type="text"
+                          required
+                          value={editingBlogPost.title_en || ''}
+                          onChange={(e) => setEditingBlogPost({ ...editingBlogPost, title_en: e.target.value })}
+                          className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">Slug URL (ej: mi-nuevo-post)</label>
+                        <input
+                          type="text"
+                          placeholder="deja vacío para autogenerar"
+                          value={editingBlogPost.slug || ''}
+                          onChange={(e) => setEditingBlogPost({ ...editingBlogPost, slug: e.target.value })}
+                          className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">Estado</label>
+                        <select
+                          value={editingBlogPost.status || 'published'}
+                          onChange={(e) => setEditingBlogPost({ ...editingBlogPost, status: e.target.value })}
+                          className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        >
+                          <option value="published">Publicado</option>
+                          <option value="draft">Borrador</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">Etiquetas (separadas por coma)</label>
+                        <input
+                          type="text"
+                          placeholder="sonic, darkwave, ritual"
+                          value={
+                            typeof editingBlogPost.tags === 'string'
+                              ? editingBlogPost.tags
+                              : (editingBlogPost.tags || []).join(', ')
+                          }
+                          onChange={(e) => setEditingBlogPost({ ...editingBlogPost, tags: e.target.value })}
+                          className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Portada y Destacado */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-[#050505] p-4 border border-primary/20 rounded">
+                      <div>
+                        <label className="block text-xs uppercase text-muted-foreground mb-1">Imagen de Portada</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            setBlogCoverFile(file);
+                            if (file) {
+                              setBlogPreviewUrl(URL.createObjectURL(file));
+                            }
+                          }}
+                          className="text-xs text-muted-foreground file:mr-3 file:py-1.5 file:px-3 file:border-0 file:text-xs file:bg-primary file:text-black file:font-bold hover:file:bg-primary/90 cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        {blogPreviewUrl && (
+                          <img
+                            src={blogPreviewUrl}
+                            alt="Vista previa"
+                            className="w-14 h-14 object-cover border border-primary/50 rounded"
+                          />
+                        )}
+                        <label className="flex items-center gap-2 cursor-pointer text-xs uppercase text-foreground">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(editingBlogPost.is_featured)}
+                            onChange={(e) => setEditingBlogPost({ ...editingBlogPost, is_featured: e.target.checked })}
+                            className="accent-primary w-4 h-4 cursor-pointer"
+                          />
+                          <span>Destacar en Portada de Revista</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Resúmenes con RichTextEditor */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <RichTextEditor
+                          label="Resumen Breve (ES)"
+                          value={editingBlogPost.excerpt_es || ''}
+                          rows={3}
+                          onChange={(val) => setEditingBlogPost({ ...editingBlogPost, excerpt_es: val })}
+                        />
+                      </div>
+                      <div>
+                        <RichTextEditor
+                          label="Resumen Breve (EN)"
+                          value={editingBlogPost.excerpt_en || ''}
+                          rows={3}
+                          onChange={(val) => setEditingBlogPost({ ...editingBlogPost, excerpt_en: val })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Contenido Completo con RichTextEditor */}
+                    <div className="space-y-4">
+                      <div>
+                        <RichTextEditor
+                          label="Contenido Completo (ES) - Formato Enriquecido"
+                          value={editingBlogPost.content_es || ''}
+                          rows={8}
+                          onChange={(val) => setEditingBlogPost({ ...editingBlogPost, content_es: val })}
+                        />
+                      </div>
+                      <div>
+                        <RichTextEditor
+                          label="Contenido Completo (EN) - Rich Text Formatting"
+                          value={editingBlogPost.content_en || ''}
+                          rows={8}
+                          onChange={(val) => setEditingBlogPost({ ...editingBlogPost, content_en: val })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Botones de acción */}
+                    <div className="flex justify-end gap-3 pt-4 border-t border-primary/20">
+                      <button
+                        type="button"
+                        onClick={() => setEditingBlogPost(null)}
+                        className="px-4 py-2 border border-primary/40 text-muted-foreground hover:text-foreground text-xs uppercase tracking-wider rounded"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSaving}
+                        className="px-6 py-2 bg-primary text-black font-bold text-xs uppercase tracking-widest rounded hover:bg-primary/90 transition-all shadow-md shadow-primary/20"
+                      >
+                        {isSaving ? 'Guardando...' : 'Guardar Artículo'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

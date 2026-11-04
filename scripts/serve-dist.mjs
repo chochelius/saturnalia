@@ -40,6 +40,33 @@ let rebuildState = {
 };
 
 /**
+ * Cabeceras de seguridad HTTP estándar
+ */
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+};
+
+/**
+ * Obtener origen permitido para CORS
+ */
+function getCorsOrigin(req) {
+  const origin = req.headers.origin;
+  if (!origin) return '*';
+  // Permitir dominio de producción, localhost y subred local
+  if (
+    origin === 'https://saturnalia999.art' ||
+    origin.startsWith('http://localhost:') ||
+    origin.startsWith('http://127.0.0.1:') ||
+    origin.startsWith('http://192.168.1.')
+  ) {
+    return origin;
+  }
+  return 'https://saturnalia999.art';
+}
+
+/**
  * Proxy transparente hacia PocketBase (puerto 8090)
  */
 function proxyToPocketBase(req, res) {
@@ -55,15 +82,22 @@ function proxyToPocketBase(req, res) {
   };
 
   const proxyReq = http.request(options, (proxyRes) => {
-    // Añadir CORS para desarrollo flexible
-    const headers = { ...proxyRes.headers, 'Access-Control-Allow-Origin': '*' };
+    const headers = {
+      ...proxyRes.headers,
+      ...SECURITY_HEADERS,
+      'Access-Control-Allow-Origin': getCorsOrigin(req),
+    };
     res.writeHead(proxyRes.statusCode || 200, headers);
     proxyRes.pipe(res);
   });
 
   proxyReq.on('error', (err) => {
     console.error('PocketBase Proxy Error:', err.message);
-    res.writeHead(502, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.writeHead(502, {
+      'Content-Type': 'application/json',
+      ...SECURITY_HEADERS,
+      'Access-Control-Allow-Origin': getCorsOrigin(req),
+    });
     res.end(JSON.stringify({ error: 'PocketBase backend gateway error', details: err.message }));
   });
 
@@ -112,10 +146,13 @@ function triggerRebuild() {
 }
 
 const server = http.createServer((req, res) => {
+  const corsOrigin = getCorsOrigin(req);
+
   // CORS preflight
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
+      ...SECURITY_HEADERS,
+      'Access-Control-Allow-Origin': corsOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     });
@@ -125,12 +162,23 @@ const server = http.createServer((req, res) => {
   const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = urlObj.pathname;
 
-  // 1. Endpoint Rebuild API
+  // 1. Endpoint Rebuild API (Protegido con verificación de autenticación)
   if (pathname === '/api/rebuild' && req.method === 'POST') {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      res.writeHead(401, {
+        'Content-Type': 'application/json',
+        ...SECURITY_HEADERS,
+        'Access-Control-Allow-Origin': corsOrigin,
+      });
+      return res.end(JSON.stringify({ error: 'No autorizado. Se requiere token de sesión.' }));
+    }
+
     const result = triggerRebuild();
     res.writeHead(200, {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
+      ...SECURITY_HEADERS,
+      'Access-Control-Allow-Origin': corsOrigin,
     });
     return res.end(JSON.stringify({ success: true, ...result, ...rebuildState }));
   }
@@ -139,7 +187,8 @@ const server = http.createServer((req, res) => {
   if (pathname === '/api/rebuild/status' && req.method === 'GET') {
     res.writeHead(200, {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
+      ...SECURITY_HEADERS,
+      'Access-Control-Allow-Origin': corsOrigin,
     });
     return res.end(JSON.stringify(rebuildState));
   }
@@ -149,35 +198,55 @@ const server = http.createServer((req, res) => {
     return proxyToPocketBase(req, res);
   }
 
-  // 4. Servir archivos estáticos desde dist/
-  let filePath = path.join(DIST_DIR, decodeURIComponent(pathname));
-
-  // Si es un directorio, buscar index.html
-  if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
-    filePath = path.join(filePath, 'index.html');
-  } else if (!fs.existsSync(filePath)) {
-    // Soporte para URLs limpias (/links -> /links/index.html, /admin -> /admin/index.html)
-    const withIndex = path.join(DIST_DIR, decodeURIComponent(pathname), 'index.html');
-    const withHtml = path.join(DIST_DIR, decodeURIComponent(pathname) + '.html');
-    if (fs.existsSync(withIndex)) {
-      filePath = withIndex;
-    } else if (fs.existsSync(withHtml)) {
-      filePath = withHtml;
+  // 4. Servir archivos estáticos desde dist/ con protección estricta contra Path Traversal
+  try {
+    let cleanPath = decodeURIComponent(pathname.replace(/\0/g, ''));
+    // Normalizar y remover intentos de escalado
+    cleanPath = path.normalize(cleanPath).replace(/^(\.\.[\/\\])+/, '');
+    if (cleanPath.startsWith('/') || cleanPath.startsWith('\\')) {
+      cleanPath = cleanPath.slice(1);
     }
-  }
 
-  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-    res.writeHead(200, {
-      'Content-Type': contentType,
-      'Access-Control-Allow-Origin': '*',
-    });
-    fs.createReadStream(filePath).pipe(res);
-  } else {
-    // 404 Fallback
-    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('404 Transmisión no encontrada');
+    let filePath = path.resolve(DIST_DIR, cleanPath);
+
+    // Verificación de seguridad inquebrantable: debe residir dentro de DIST_DIR
+    if (!filePath.startsWith(DIST_DIR)) {
+      console.warn(`[SEGURIDAD] Intento de Path Traversal bloqueado: ${pathname}`);
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8', ...SECURITY_HEADERS });
+      return res.end('403 Transmisión Prohibida');
+    }
+
+    // Si es un directorio, buscar index.html
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+      filePath = path.join(filePath, 'index.html');
+    } else if (!fs.existsSync(filePath)) {
+      // Soporte para URLs limpias (/links -> /links/index.html, /admin -> /admin/index.html)
+      const withIndex = path.join(DIST_DIR, cleanPath, 'index.html');
+      const withHtml = path.join(DIST_DIR, cleanPath + '.html');
+      if (fs.existsSync(withIndex) && path.resolve(withIndex).startsWith(DIST_DIR)) {
+        filePath = withIndex;
+      } else if (fs.existsSync(withHtml) && path.resolve(withHtml).startsWith(DIST_DIR)) {
+        filePath = withHtml;
+      }
+    }
+
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+      const ext = path.extname(filePath).toLowerCase();
+      const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        ...SECURITY_HEADERS,
+        'Access-Control-Allow-Origin': corsOrigin,
+      });
+      fs.createReadStream(filePath).pipe(res);
+    } else {
+      // 404 Fallback
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', ...SECURITY_HEADERS });
+      res.end('404 Transmisión no encontrada');
+    }
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8', ...SECURITY_HEADERS });
+    res.end('400 Solicitud inválida');
   }
 });
 

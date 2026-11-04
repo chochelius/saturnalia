@@ -5,7 +5,7 @@
 <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none" aria-hidden="true">
   {/* Top Left Spiderweb Anchor */}
   <svg
-    class="absolute top-0 left-0 w-[420px] h-[420px] sm:w-[560px] sm:h-[560px] lg:w-[680px] lg:h-[680px] opacity-75"
+    class="absolute top-0 left-0 w-[420px] h-[420px] sm:w-[560px] sm:h-[560px] lg:w-[680px] lg:h-[680px] opacity-75 animate-web-tl"
     viewBox="0 0 700 700"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +80,7 @@
 
   {/* Top Right Spiderweb Anchor (Mirrored & Subtle) */}
   <svg
-    class="absolute top-0 right-0 w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] lg:w-[580px] lg:h-[580px] opacity-60 transform scale-x-[-1]"
+    class="absolute top-0 right-0 w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] lg:w-[580px] lg:h-[580px] opacity-60 animate-web-tr"
     viewBox="0 0 700 700"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -138,5 +138,35 @@
   .bg-radial-vignette {
     background: radial-gradient(circle at 50% 25%, rgba(12, 129, 189, 0.05) 0%, transparent 65%),
                 radial-gradient(circle at 50% 75%, rgba(2, 2, 2, 0.4) 0%, #020202 85%);
+  }
+
+  @keyframes webDriftTL {
+    0%, 100% {
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    }
+    50% {
+      transform: translate3d(8px, 6px, 0) rotate(0.4deg) scale(1.015);
+    }
+  }
+
+  @keyframes webDriftTR {
+    0%, 100% {
+      transform: scaleX(-1) translate3d(0, 0, 0) rotate(0deg) scale(1);
+    }
+    50% {
+      transform: scaleX(-1) translate3d(-6px, 8px, 0) rotate(-0.35deg) scale(1.02);
+    }
+  }
+
+  .animate-web-tl {
+    animation: webDriftTL 16s ease-in-out infinite alternate;
+    will-change: transform;
+    transform-origin: top left;
+  }
+
+  .animate-web-tr {
+    animation: webDriftTR 19s ease-in-out infinite alternate;
+    will-change: transform;
+    transform-origin: top right;
   }
 </style>

@@ -12,6 +12,7 @@ export interface HeaderNavTranslations {
   bio: string;
   discography: string;
   gallery?: string;
+  blog?: string;
   contact: string;
 }
 
@@ -38,6 +39,7 @@ export const Header = ({
   const bioHref = lang === "en" ? "/bio" : "/es/bio";
   const discographyHref = lang === "en" ? "/discography" : "/es/discography";
   const galleryHref = lang === "en" ? "/gallery" : "/es/gallery";
+  const blogHref = lang === "en" ? "/blog" : "/es/blog";
   const contactHref = lang === "en" ? "/contact" : "/es/contact";
   const linksHref = lang === "en" ? "/links" : "/es/links";
 
@@ -46,6 +48,7 @@ export const Header = ({
     { href: bioHref, label: nav.bio },
     { href: discographyHref, label: nav.discography },
     { href: galleryHref, label: nav.gallery || (lang === "en" ? "Gallery" : "Galería") },
+    { href: blogHref, label: nav.blog || (lang === "en" ? "Blog" : "Blog") },
     { href: contactHref, label: nav.contact },
     { href: linksHref, label: "Links" },
   ];
@@ -80,8 +83,13 @@ export const Header = ({
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#020202]/90 backdrop-blur-lg border-b border-b-primary/30">
       <div className="container mx-auto px-4 h-20 flex justify-between items-center">
-        <a href={homeHref} onClick={() => setIsOpen(false)} className="z-10">
-          <span className="text-3xl font-headline font-bold text-glow text-primary uppercase tracking-widest block">
+        <a href={homeHref} onClick={() => setIsOpen(false)} className="z-10 flex items-center gap-3 group">
+          <img
+            src="/logo.jpg"
+            alt="Saturnalia999 Logo"
+            className="w-9 h-9 sm:w-10 sm:h-10 object-cover rounded-none border border-primary/40 group-hover:border-primary group-hover:shadow-[0_0_12px_rgba(28,161,229,0.7)] transition-all duration-300"
+          />
+          <span className="text-2xl sm:text-3xl font-headline font-bold text-glow text-primary uppercase tracking-widest block">
             Saturnalia999
           </span>
         </a>
@@ -155,7 +163,12 @@ export const Header = ({
             <SheetContent side="right" className="bg-[#020202]/98 border-l-primary/30 w-full p-0">
               <div className="flex flex-col h-full">
                 <div className="flex justify-between items-center p-4 border-b border-b-primary/20 h-20">
-                  <a href={homeHref} onClick={() => setIsOpen(false)}>
+                  <a href={homeHref} onClick={() => setIsOpen(false)} className="flex items-center gap-2.5">
+                    <img
+                      src="/logo.jpg"
+                      alt="Saturnalia999 Logo"
+                      className="w-7 h-7 object-cover border border-primary/40 shadow-sm"
+                    />
                     <span className="text-2xl font-headline text-glow text-primary uppercase block font-bold">
                       S999
                     </span>

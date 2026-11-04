@@ -245,6 +245,36 @@ async function sync() {
     console.log(`  ✓ tracks.json actualizado (${tracksData.length} pistas).`);
   }
 
+  // 8. Blog / Transmisiones
+  console.log('📰 Sincronizando artículos del Blog...');
+  const blogItems = await fetchCollection('blog_posts');
+  if (blogItems) {
+    const blogData = blogItems
+      .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0))
+      .map((r) => ({
+        id: r.id,
+        slug: r.slug || r.id,
+        titleEn: r.title_en || '',
+        titleEs: r.title_es || r.title_en || '',
+        excerptEn: r.excerpt_en || '',
+        excerptEs: r.excerpt_es || '',
+        contentEn: r.content_en || '',
+        contentEs: r.content_es || '',
+        coverImage: r.cover_image
+          ? `http://${PI_HOST}:9002/api/files/${r.collectionId || 'blog_posts'}/${r.id}/${r.cover_image}`
+          : '/logo.jpg',
+        tags: Array.isArray(r.tags)
+          ? r.tags
+          : (typeof r.tags === 'string' ? r.tags.split(',').map((s) => s.trim()).filter(Boolean) : []),
+        isFeatured: Boolean(r.is_featured),
+        status: r.status || 'published',
+        publishedAt: r.published_at || r.created || new Date().toISOString(),
+        order: Number(r.order) || 1,
+      }));
+    fs.writeFileSync(path.join(FALLBACK_DIR, 'blog.json'), JSON.stringify(blogData, null, 2), 'utf-8');
+    console.log(`  ✓ blog.json actualizado (${blogData.length} artículos).`);
+  }
+
   console.log('\n✨ Sincronización completada. Archivos fallback actualizados para GitHub Pages.\n');
 }
 

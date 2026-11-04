@@ -60,8 +60,15 @@ async function ensureCollection(name, collectionData) {
 async function main() {
   console.log(`📡 Conectando a PocketBase en: ${PB_URL}`);
 
-  const email = process.argv[2] || process.env.PB_ADMIN_EMAIL || 'admin@saturnalia999.com';
-  const password = process.argv[3] || process.env.PB_ADMIN_PASSWORD || 'Saturnalia999!';
+  const email = process.argv[2] || process.env.PB_ADMIN_EMAIL;
+  const password = process.argv[3] || process.env.PB_ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    console.error('❌ Error: Se requieren credenciales de PocketBase.');
+    console.error('Uso: node scripts/seed-pocketbase.mjs <admin_email> <admin_password>');
+    console.error('O defina las variables PB_ADMIN_EMAIL y PB_ADMIN_PASSWORD.');
+    process.exit(1);
+  }
 
   try {
     console.log(`🔐 Autenticando superusuario: ${email}`);

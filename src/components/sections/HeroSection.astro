@@ -40,6 +40,18 @@ const formattedVideoUrl = getEmbedUrl(videoUrl);
   <div class="absolute inset-0 bg-black/60 z-0 pointer-events-none"></div>
 
   <div class="relative z-10 flex flex-col items-center justify-center p-4 w-full max-w-4xl">
+    {/* Sigilo / Logotipo Central */}
+    <div class="mb-6 relative group">
+      <div class="w-20 h-20 sm:w-24 sm:h-24 p-1 border-2 border-primary/60 bg-black/80 shadow-[0_0_20px_rgba(28,161,229,0.5)] group-hover:shadow-[0_0_30px_rgba(28,161,229,0.8)] transition-all duration-500 overflow-hidden">
+        <img
+          src="/logo.jpg"
+          alt="Saturnalia999 Sigil"
+          class="w-full h-full object-cover filter contrast-125"
+        />
+      </div>
+      <div class="absolute -inset-1 border border-primary/20 pointer-events-none scale-110"></div>
+    </div>
+
     <GlitchText
       text={title}
       as="h1"
@@ -65,6 +77,12 @@ const formattedVideoUrl = getEmbedUrl(videoUrl);
         class="px-6 py-2.5 border border-primary bg-primary/10 hover:bg-primary text-primary hover:text-black font-headline uppercase tracking-widest text-sm transition-all duration-300 shadow-lg shadow-primary/20"
       >
         {lang === 'en' ? 'Discography' : 'Discografía'}
+      </a>
+      <a
+        href={lang === 'en' ? '/blog' : '/es/blog'}
+        class="px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-sm transition-all duration-300"
+      >
+        {lang === 'en' ? 'Blog' : 'Blog'}
       </a>
       <a
         href={lang === 'en' ? '/bio' : '/es/bio'}

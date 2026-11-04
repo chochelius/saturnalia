@@ -1,0 +1,141 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Header } from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer.astro';
+import { RichTextContent } from '../../components/ui/RichTextContent';
+import { getBlogPosts, getSocials, getSiteTexts, buildTranslation, type BlogPost } from '../../lib/pocketbase';
+import { Calendar, Tag, ArrowLeft, Share2 } from 'lucide-react';
+
+export async function getStaticPaths() {
+  const posts = await getBlogPosts();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const socials = await getSocials();
+const siteTexts = await getSiteTexts();
+
+const t = buildTranslation(siteTexts, 'en');
+
+const spotifyUrl = socials.spotify || "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4";
+const youtubeUrl = socials.youtube || "https://www.youtube.com/@saturnaliainfinita999";
+const bandcampUrl = socials.bandcamp || "https://saturnalia999.bandcamp.com/releases";
+const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia999999999";
+
+const formatDate = (dateString: string) => {
+  try {
+    const d = new Date(dateString);
+    return d.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  } catch {
+    return dateString;
+  }
+};
+---
+
+<Layout
+  title={`Saturnalia999 — ${post.titleEn}`}
+  description={post.excerptEn || post.titleEn}
+  lang="en"
+>
+  <div class="min-h-screen flex flex-col justify-between">
+    <Header
+      client:load
+      nav={t.nav}
+      lang="en"
+      currentPath={Astro.url.pathname}
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+    />
+
+    <main class="flex-1 pt-24 pb-16">
+      <article class="container mx-auto px-4 max-w-4xl">
+        {/* Enlace volver */}
+        <div className="mb-8">
+          <a
+            href="/blog"
+            class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-primary hover:text-accent border border-primary/30 hover:border-primary px-3 py-1.5 transition-all"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Return to Transmissions</span>
+          </a>
+        </div>
+
+        {/* Encabezado del artículo */}
+        <header class="mb-10 text-center sm:text-left">
+          <div class="flex flex-wrap items-center gap-3 text-xs font-mono text-muted-foreground mb-4">
+            <span class="flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-primary" />
+              {formatDate(post.publishedAt)}
+            </span>
+            {post.tags && post.tags.length > 0 && (
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <Tag className="w-3 h-3 text-primary/70" />
+                {post.tags.map((tg) => (
+                  <span class="text-primary/70">#{tg}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-headline font-bold text-foreground text-glow uppercase tracking-wider leading-tight mb-6">
+            {post.titleEn}
+          </h1>
+
+          {post.excerptEn && (
+            <p class="font-cover text-base sm:text-lg text-ghost-glow/90 italic border-l-2 border-primary/50 pl-4 py-1 mb-8">
+              {post.excerptEn}
+            </p>
+          )}
+
+          {/* Imagen de portada */}
+          {post.coverImage && (
+            <div class="aspect-[16/9] w-full overflow-hidden border border-primary/40 shadow-xl shadow-black relative my-8">
+              <img
+                src={post.coverImage}
+                alt={post.titleEn}
+                class="w-full h-full object-cover filter contrast-110"
+              />
+            </div>
+          )}
+        </header>
+
+        {/* Contenido en texto enriquecido */}
+        <div class="bg-[#030303]/90 border border-primary/20 p-6 sm:p-10 shadow-lg mb-12">
+          <RichTextContent content={post.contentEn} />
+        </div>
+
+        {/* Pie del artículo */}
+        <div class="border-t border-primary/30 pt-6 flex justify-between items-center text-xs font-mono">
+          <a
+            href="/blog"
+            class="text-primary hover:underline uppercase tracking-wider"
+          >
+            ← Back to Archive
+          </a>
+          <span class="text-muted-foreground uppercase">
+            Broadcast Frequency // Saturnalia999
+          </span>
+        </div>
+      </article>
+    </main>
+
+    <Footer
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+      instagramUrl={instagramUrl}
+    />
+  </div>
+</Layout>

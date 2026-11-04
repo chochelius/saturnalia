@@ -1,0 +1,51 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { Header } from '../../../components/layout/Header';
+import { BlogSection } from '../../../components/sections/BlogSection';
+import Footer from '../../../components/layout/Footer.astro';
+import { getBlogPosts, getSocials, getSiteTexts, buildTranslation } from '../../../lib/pocketbase';
+
+const posts = await getBlogPosts();
+const socials = await getSocials();
+const siteTexts = await getSiteTexts();
+
+const t = buildTranslation(siteTexts, 'es');
+
+const spotifyUrl = socials.spotify || "https://open.spotify.com/intl-es/artist/72zPH4AWqTekcgX6kNwfz4";
+const youtubeUrl = socials.youtube || "https://www.youtube.com/@saturnaliainfinita999";
+const bandcampUrl = socials.bandcamp || "https://saturnalia999.bandcamp.com/releases";
+const instagramUrl = socials.instagram || "https://www.instagram.com/saturnalia999999999";
+---
+
+<Layout
+  title="Saturnalia999 — Transmisiones y Bitácora"
+  description="Transmisiones oficiales, manifiesto artístico, noticias y bitácora de producción de Saturnalia999."
+  lang="es"
+>
+  <div class="min-h-screen flex flex-col justify-between">
+    <Header
+      client:load
+      nav={t.nav}
+      lang="es"
+      currentPath={Astro.url.pathname}
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+    />
+    <main class="flex-1 pt-24 pb-12">
+      <BlogSection
+        client:load
+        posts={posts}
+        lang="es"
+        title="Transmisiones / Blog"
+        subtitle="Ensayos sonoros, manifiesto, bitácora de producción y frecuencias oscuras."
+      />
+    </main>
+    <Footer
+      spotifyUrl={spotifyUrl}
+      youtubeUrl={youtubeUrl}
+      bandcampUrl={bandcampUrl}
+      instagramUrl={instagramUrl}
+    />
+  </div>
+</Layout>

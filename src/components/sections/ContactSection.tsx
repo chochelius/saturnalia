@@ -51,7 +51,7 @@ interface ContactSectionProps {
 export const ContactSection = ({
   translations,
   lang = "en",
-  endpoint = "https://api.web3forms.com/submit",
+  endpoint = "/api/contact",
 }: ContactSectionProps) => {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [feedbackMessage, setFeedbackMessage] = useState("");
@@ -102,16 +102,22 @@ export const ContactSection = ({
         setFeedbackMessage(translations.toast.description);
         form.reset();
       } else {
-        // Fallback for demo/placeholder endpoint
-        setStatus("success");
-        setFeedbackMessage(translations.toast.description);
-        form.reset();
+        const errorData = await response.json().catch(() => null);
+        setStatus("error");
+        setFeedbackMessage(
+          errorData?.error ||
+          (lang === "es"
+            ? "Hubo un error al transmitir el mensaje a través de Resend. Por favor intenta de nuevo."
+            : "There was an error transmitting your message through Resend. Please try again.")
+        );
       }
     } catch {
-      // In case endpoint is unreachable, gracefully inform
-      setStatus("success");
-      setFeedbackMessage(translations.toast.description);
-      form.reset();
+      setStatus("error");
+      setFeedbackMessage(
+        lang === "es"
+          ? "No se pudo conectar con el canal de transmisión. Revisa tu conexión."
+          : "Could not connect to the transmission channel. Please check your connection."
+      );
     }
   }
 
@@ -143,12 +149,13 @@ export const ContactSection = ({
             )}
 
             {status === "error" && (
-              <div className="mb-6 p-4 border border-destructive/50 bg-destructive/10 flex items-center space-x-3 text-destructive">
+              <div className="mb-6 p-4 border border-destructive/50 bg-destructive/10 flex items-center space-x-3 text-destructive animate-in fade-in">
                 <AlertCircle className="w-6 h-6 flex-shrink-0" />
                 <p className="text-sm">
-                  {lang === "es"
-                    ? "Hubo un error al transmitir el mensaje. Por favor intenta de nuevo."
-                    : "There was an error transmitting your message. Please try again."}
+                  {feedbackMessage ||
+                    (lang === "es"
+                      ? "Hubo un error al transmitir el mensaje. Por favor intenta de nuevo."
+                      : "There was an error transmitting your message. Please try again.")}
                 </p>
               </div>
             )}

@@ -6,6 +6,7 @@ import fallbackLinks from '../data/fallback/links.json';
 import fallbackTexts from '../data/fallback/texts.json';
 import fallbackGallery from '../data/fallback/gallery.json';
 import fallbackTracks from '../data/fallback/tracks.json';
+import fallbackBlog from '../data/fallback/blog.json';
 
 export function getPocketBaseUrl(): string {
   if (typeof window !== 'undefined') {
@@ -82,6 +83,24 @@ export interface TrackItem {
   externalUrl?: string;
 }
 
+export interface BlogPost {
+  id: string;
+  slug: string;
+  titleEn: string;
+  titleEs: string;
+  excerptEn: string;
+  excerptEs: string;
+  contentEn: string;
+  contentEs: string;
+  coverImage: string;
+  coverFile?: string;
+  tags: string[];
+  isFeatured: boolean;
+  status: 'published' | 'draft';
+  publishedAt: string;
+  order: number;
+}
+
 export interface SiteTexts {
   hero: {
     titleEn: string;
@@ -99,6 +118,8 @@ export interface SiteTexts {
     discographyEs: string;
     galleryEn: string;
     galleryEs: string;
+    blogEn?: string;
+    blogEs?: string;
     contactEn: string;
     contactEs: string;
   };
@@ -343,6 +364,56 @@ export async function getTracks(): Promise<TrackItem[]> {
 }
 
 /**
+ * Obtener artículos del Blog / Transmisiones desde PocketBase con fallback automático
+ */
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  try {
+    const records = await withFastTimeout(
+      pb.collection('blog_posts').getFullList({
+        sort: '-published_at,-order',
+        requestKey: null,
+      })
+    );
+
+    if (records && records.length > 0) {
+      return records.map((r: any) => ({
+        id: r.id,
+        slug: r.slug || r.id,
+        titleEn: r.title_en || r.titleEn || '',
+        titleEs: r.title_es || r.titleEs || r.title_en || '',
+        excerptEn: r.excerpt_en || r.excerptEn || '',
+        excerptEs: r.excerpt_es || r.excerptEs || r.excerpt_en || '',
+        contentEn: r.content_en || r.contentEn || '',
+        contentEs: r.content_es || r.contentEs || r.content_en || '',
+        coverImage: r.cover_image
+          ? pb.files.getURL(r, r.cover_image)
+          : (r.coverImage || '/logo.jpg'),
+        coverFile: r.cover_image || '',
+        tags: Array.isArray(r.tags)
+          ? r.tags
+          : (typeof r.tags === 'string' ? r.tags.split(',').map((s: string) => s.trim()).filter(Boolean) : []),
+        isFeatured: Boolean(r.is_featured ?? r.isFeatured),
+        status: (r.status as 'published' | 'draft') || 'published',
+        publishedAt: r.published_at || r.publishedAt || r.created || new Date().toISOString(),
+        order: Number(r.order) || 1,
+      }));
+    }
+  } catch {
+    // Fallback
+  }
+
+  return fallbackBlog as BlogPost[];
+}
+
+/**
+ * Obtener un artículo individual por slug
+ */
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const posts = await getBlogPosts();
+  return posts.find((p) => p.slug === slug || p.id === slug) || null;
+}
+
+/**
  * Obtener textos de todas las secciones del sitio desde PocketBase con fallback automático
  */
 export async function getSiteTexts(): Promise<SiteTexts> {
@@ -427,6 +498,7 @@ export function buildTranslation(siteTexts: SiteTexts, lang: 'en' | 'es') {
       bio: isEs ? siteTexts.nav.bioEs : siteTexts.nav.bioEn,
       discography: isEs ? siteTexts.nav.discographyEs : siteTexts.nav.discographyEn,
       gallery: isEs ? (siteTexts.nav.galleryEs || 'Galería') : (siteTexts.nav.galleryEn || 'Gallery'),
+      blog: isEs ? (siteTexts.nav.blogEs || 'Blog') : (siteTexts.nav.blogEn || 'Blog'),
       contact: isEs ? siteTexts.nav.contactEs : siteTexts.nav.contactEn,
     },
     gallerySection: {

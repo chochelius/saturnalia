@@ -88,4 +88,14 @@
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.85);
   }
+
+  /* Aberración cromática sutil para carátulas y tarjetas al hover */
+  .chromatic-hover {
+    transition: filter 0.3s ease, transform 0.3s ease;
+  }
+  .group:hover .chromatic-hover,
+  .chromatic-hover:hover {
+    filter: drop-shadow(-2px 0px 0px rgba(28, 161, 229, 0.8))
+            drop-shadow(2px 0px 0px rgba(255, 20, 60, 0.6));
+  }
 }

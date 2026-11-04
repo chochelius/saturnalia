@@ -20,9 +20,10 @@ const { title, paragraphs } = Astro.props;
     <Separator className="w-24 mx-auto bg-primary mb-8" />
     <div class="max-w-3xl mx-auto space-y-6">
       {paragraphs.map((paragraph) => (
-        <p class="text-xl text-primary/80 leading-relaxed tracking-wider font-sans">
-          {paragraph}
-        </p>
+        <p
+          class="text-lg sm:text-xl text-foreground/90 leading-relaxed tracking-wider font-body selection:bg-primary selection:text-black"
+          set:html={paragraph}
+        />
       ))}
     </div>
   </div>
