@@ -36,8 +36,8 @@ const formattedVideoUrl = getEmbedUrl(videoUrl);
 >
   <ParticleBackground client:load />
   
-  {/* Dark overlay positioned cleanly behind content */}
-  <div class="absolute inset-0 bg-black/60 z-0 pointer-events-none"></div>
+  {/* Dark overlay positioned cleanly behind content with clear corners for spiderwebs */}
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/60 z-0 pointer-events-none"></div>
 
   <div class="relative z-10 flex flex-col items-center justify-center p-4 w-full max-w-4xl">
     {/* Sigilo / Logotipo Central */}
