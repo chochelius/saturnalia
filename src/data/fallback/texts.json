@@ -21,8 +21,8 @@
   "gallerySection": {
     "titleEn": "Visual Archives",
     "titleEs": "Archivos Visuales",
-    "subtitleEn": "Photography, transmissions, and gothic experimental aesthetics.",
-    "subtitleEs": "Fotografía, transmisiones y estética visual oscura."
+    "subtitleEn": "Photography, visual archives, and gothic experimental aesthetics.",
+    "subtitleEs": "Fotografía, archivos visuales y estética gótica experimental."
   },
   "albumSection": {
     "titleEn": "Discography",
@@ -45,13 +45,13 @@
     "emailPlaceholderEs": "tu.direccion@protocolo.net",
     "messageLabelEn": "Message",
     "messageLabelEs": "Mensaje",
-    "messagePlaceholderEn": "Your transmission...",
-    "messagePlaceholderEs": "Tu transmisión...",
-    "submitEn": "Transmit Message",
-    "submitEs": "Transmitir Mensaje",
-    "toastTitleEn": "Transmission Received!",
-    "toastTitleEs": "¡Transmisión Recibida!",
-    "toastDescEn": "Thanks for reaching out. We'll get back to you from the void.",
-    "toastDescEs": "Gracias por contactar. Te responderemos desde el vacío."
+    "messagePlaceholderEn": "Your message...",
+    "messagePlaceholderEs": "Tu mensaje...",
+    "submitEn": "Send Message",
+    "submitEs": "Enviar Mensaje",
+    "toastTitleEn": "Message Sent!",
+    "toastTitleEs": "¡Mensaje Enviado!",
+    "toastDescEn": "Thanks for reaching out. We'll get back to you soon.",
+    "toastDescEs": "Gracias por contactar. Te responderemos a la brevedad."
   }
 }

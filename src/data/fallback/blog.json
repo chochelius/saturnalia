@@ -1,19 +1,19 @@
 [
   {
     "id": "04l87l3s8xvflz5",
-    "slug": "transmission-zero-sonic-architecture",
-    "titleEn": "Transmission Zero: The Sonic Architecture",
-    "titleEs": "Transmisión Cero: La Arquitectura Sonora",
-    "excerptEn": "Test",
-    "excerptEs": "Test",
-    "contentEn": "TEST",
-    "contentEs": "TEST",
+    "slug": "chapter-zero-sonic-architecture",
+    "titleEn": "Chapter Zero: The Sonic Architecture",
+    "titleEs": "Capítulo Cero: La Arquitectura Sonora",
+    "excerptEn": "A journey through the sonic architecture and violin textures of Saturnalia999.",
+    "excerptEs": "Un viaje a través de la arquitectura sonora y las texturas de violín de Saturnalia999.",
+    "contentEn": "<p>A deep exploration into the distorted violin resonances, industrial rhythms, and experimental gothic atmosphere crafted by Saturnalia999.</p>",
+    "contentEs": "<p>Una exploración profunda en las resonancias de violín distorsionado, ritmos industriales y la atmósfera gótica experimental creada por Saturnalia999.</p>",
     "coverImage": "/logo.png",
     "tags": [
       "sonic",
       "experimental",
       "darkwave",
-      "transmission"
+      "violin"
     ],
     "isFeatured": true,
     "status": "published",

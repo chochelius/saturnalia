@@ -1,6 +1,6 @@
 # Cloudflare Worker con Resend para Saturnalia999
 
-Este Worker recibe las transmisiones del formulario de contacto en `saturnalia999.art` y las envía directamente a tu bandeja de correo personal utilizando la API oficial de **Resend**.
+Este Worker recibe los mensajes del formulario de contacto en `saturnalia999.art` y las envía directamente a tu bandeja de correo personal utilizando la API oficial de **Resend**.
 
 ## 🚀 Despliegue Rápido desde el Panel de Cloudflare
 

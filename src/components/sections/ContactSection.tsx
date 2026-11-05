@@ -92,7 +92,7 @@ export const ContactSection = ({
         },
         body: JSON.stringify({
           ...values,
-          subject: `New Transmission from ${values.name} (Saturnalia999)`,
+          subject: `New Message from ${values.name} (Saturnalia999)`,
           from_name: values.name,
         }),
       });
@@ -107,16 +107,16 @@ export const ContactSection = ({
         setFeedbackMessage(
           errorData?.error ||
           (lang === "es"
-            ? "Hubo un error al transmitir el mensaje a través de Resend. Por favor intenta de nuevo."
-            : "There was an error transmitting your message through Resend. Please try again.")
+            ? "Hubo un error al enviar el mensaje. Por favor intenta de nuevo."
+            : "There was an error sending your message. Please try again.")
         );
       }
     } catch {
       setStatus("error");
       setFeedbackMessage(
         lang === "es"
-          ? "No se pudo conectar con el canal de transmisión. Revisa tu conexión."
-          : "Could not connect to the transmission channel. Please check your connection."
+          ? "No se pudo conectar con el servidor. Revisa tu conexión."
+          : "Could not connect to the server. Please check your connection."
       );
     }
   }
@@ -154,8 +154,8 @@ export const ContactSection = ({
                 <p className="text-sm">
                   {feedbackMessage ||
                     (lang === "es"
-                      ? "Hubo un error al transmitir el mensaje. Por favor intenta de nuevo."
-                      : "There was an error transmitting your message. Please try again.")}
+                      ? "Hubo un error al enviar el mensaje. Por favor intenta de nuevo."
+                      : "There was an error sending your message. Please try again.")}
                 </p>
               </div>
             )}

@@ -46,6 +46,11 @@ const formattedVideoUrl = getEmbedUrl(videoUrl);
         <img
           src="/logo.png"
           alt="Saturnalia999 Sigil"
+          width="96"
+          height="96"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
           class="w-full h-full object-contain filter contrast-125 transition-transform duration-500 group-hover:scale-105"
         />
       </div>
@@ -64,37 +69,49 @@ const formattedVideoUrl = getEmbedUrl(videoUrl);
       <iframe
         class="w-full h-full border-0"
         src={formattedVideoUrl}
-        title="Saturnalia999 - Video Transmission"
+        title="Saturnalia999 - Official Video"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen
         loading="lazy"
       ></iframe>
     </div>
 
-    <div class="mt-8 flex flex-wrap gap-4 justify-center">
+    <div class="mt-8 flex flex-wrap gap-3 sm:gap-4 justify-center">
       <a
         href={lang === 'en' ? '/discography' : '/es/discography'}
-        class="px-6 py-2.5 border border-primary bg-primary/10 hover:bg-primary text-primary hover:text-black font-headline uppercase tracking-widest text-sm transition-all duration-300 shadow-lg shadow-primary/20"
+        class="px-5 sm:px-6 py-2.5 border border-primary bg-primary/10 hover:bg-primary text-primary hover:text-black font-headline uppercase tracking-widest text-xs sm:text-sm transition-all duration-300 shadow-lg shadow-primary/20"
       >
         {lang === 'en' ? 'Discography' : 'Discografía'}
       </a>
       <a
-        href={lang === 'en' ? '/blog' : '/es/blog'}
-        class="px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-sm transition-all duration-300"
-      >
-        {lang === 'en' ? 'Blog' : 'Blog'}
-      </a>
-      <a
         href={lang === 'en' ? '/bio' : '/es/bio'}
-        class="px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-sm transition-all duration-300"
+        class="px-5 sm:px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-xs sm:text-sm transition-all duration-300"
       >
         {lang === 'en' ? 'Biography' : 'Biografía'}
       </a>
       <a
+        href={lang === 'en' ? '/gallery' : '/es/gallery'}
+        class="px-5 sm:px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-xs sm:text-sm transition-all duration-300"
+      >
+        {lang === 'en' ? 'Gallery' : 'Galería'}
+      </a>
+      <a
+        href={lang === 'en' ? '/blog' : '/es/blog'}
+        class="px-5 sm:px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-xs sm:text-sm transition-all duration-300"
+      >
+        {lang === 'en' ? 'Blog' : 'Blog'}
+      </a>
+      <a
         href={lang === 'en' ? '/contact' : '/es/contact'}
-        class="px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-sm transition-all duration-300"
+        class="px-5 sm:px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-xs sm:text-sm transition-all duration-300"
       >
         {lang === 'en' ? 'Contact' : 'Contacto'}
+      </a>
+      <a
+        href={lang === 'en' ? '/links' : '/es/links'}
+        class="px-5 sm:px-6 py-2.5 border border-primary/40 hover:border-primary text-primary hover:text-accent font-headline uppercase tracking-widest text-xs sm:text-sm transition-all duration-300"
+      >
+        {lang === 'en' ? 'Links' : 'Enlaces'}
       </a>
     </div>
   </div>

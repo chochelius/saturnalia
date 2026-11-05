@@ -71,8 +71,8 @@ export default function GallerySection({
             <Eye className="w-10 h-10 text-primary/60 mx-auto mb-3 animate-pulse" />
             <p className="font-mono text-sm text-foreground/80 uppercase tracking-widest">
               {isEs
-                ? '// NO HAY TRANSMISIONES EN EL ARCHIVO VISUAL'
-                : '// NO TRANSMISSIONS FOUND IN VISUAL ARCHIVE'}
+                ? '// NO HAY ELEMENTOS EN EL ARCHIVO VISUAL'
+                : '// NO ITEMS FOUND IN VISUAL ARCHIVE'}
             </p>
             <p className="font-mono text-xs text-muted-foreground mt-2">
               {isEs
@@ -193,7 +193,7 @@ export default function GallerySection({
               <div className="w-full p-4 sm:p-6 bg-[#080808] border-t border-primary/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
                   <h4 className="font-mono text-lg font-bold text-primary">
-                    {(isEs ? currentItem.titleEs : currentItem.title) || currentItem.title || 'Untitled Transmission'}
+                    {(isEs ? currentItem.titleEs : currentItem.title) || currentItem.title || 'Untitled'}
                   </h4>
                   {((isEs ? currentItem.captionEs : currentItem.captionEn) || currentItem.captionEn) && (
                     <p className="font-mono text-xs text-muted-foreground mt-1 max-w-2xl">

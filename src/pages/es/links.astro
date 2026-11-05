@@ -13,8 +13,8 @@ const socials = await getSocials();
 ---
 
 <Layout
-  title="Saturnalia999 — Enlaces y Transmisiones"
-  description="Transmisiones oficiales, enlaces a streaming, videos musicales y plataformas de Saturnalia999."
+  title="Saturnalia999 — Enlaces Oficiales"
+  description="Enlaces oficiales, plataformas de streaming, videos musicales y lanzamientos de Saturnalia999."
   lang="es"
 >
   <main class="min-h-screen flex flex-col items-center justify-between px-4 py-12 relative overflow-hidden">
@@ -37,6 +37,11 @@ const socials = await getSocials();
         <img
           src="/logo.png"
           alt="Saturnalia999"
+          width="112"
+          height="112"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
           class="w-full h-full object-contain filter contrast-125"
         />
         <div class="absolute -inset-1 rounded-full border border-primary/20 pointer-events-none scale-105"></div>
@@ -129,7 +134,7 @@ const socials = await getSocials();
           class="text-xs font-headline uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5"
         >
           <Disc3 className="w-3.5 h-3.5 text-primary" />
-          <span>Entrar a la Transmisión Completa</span>
+          <span>Entrar al Sitio Web</span>
         </a>
       </div>
     </div>

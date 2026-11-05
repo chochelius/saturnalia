@@ -364,7 +364,7 @@ export async function getTracks(): Promise<TrackItem[]> {
 }
 
 /**
- * Obtener artículos del Blog / Transmisiones desde PocketBase con fallback automático
+ * Obtener artículos del Blog desde PocketBase con fallback automático
  */
 export async function getBlogPosts(): Promise<BlogPost[]> {
   try {
@@ -445,8 +445,8 @@ export async function getSiteTexts(): Promise<SiteTexts> {
         gallerySection: {
           titleEn: record.gallery_title_en ?? (fallbackTexts as any).gallerySection?.titleEn ?? 'Visual Archives',
           titleEs: record.gallery_title_es ?? (fallbackTexts as any).gallerySection?.titleEs ?? 'Archivos Visuales',
-          subtitleEn: record.gallery_subtitle_en ?? (fallbackTexts as any).gallerySection?.subtitleEn ?? 'Photography, transmissions, and gothic experimental aesthetics.',
-          subtitleEs: record.gallery_subtitle_es ?? (fallbackTexts as any).gallerySection?.subtitleEs ?? 'Fotografía, transmisiones y estética gótica experimental.',
+          subtitleEn: record.gallery_subtitle_en ?? (fallbackTexts as any).gallerySection?.subtitleEn ?? 'Photography, visual archives, and gothic experimental aesthetics.',
+          subtitleEs: record.gallery_subtitle_es ?? (fallbackTexts as any).gallerySection?.subtitleEs ?? 'Fotografía, archivos visuales y estética gótica experimental.',
         },
         albumSection: {
           titleEn: record.album_title_en ?? fallbackTexts.albumSection.titleEn,

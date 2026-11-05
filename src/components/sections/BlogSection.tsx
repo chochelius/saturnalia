@@ -19,10 +19,10 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
   const isEs = lang === 'es';
   const [selectedTag, setSelectedTag] = useState<string>('all');
 
-  const defaultTitle = isEs ? 'Transmisiones / Blog' : 'Transmissions / Blog';
+  const defaultTitle = isEs ? 'Blog / Artículos' : 'Blog / Articles';
   const defaultSubtitle = isEs
-    ? 'Ensayos sonoros, manifiesto, bitácora de producción y frecuencias oscuras.'
-    : 'Sonic essays, manifestos, production dispatches, and dark spectrum frequencies.';
+    ? 'Ensayos sonoros, manifiesto, bitácora de producción y visión artística.'
+    : 'Sonic essays, manifestos, production dispatches, and gothic soundscapes.';
 
   // Extraer todos los tags únicos
   const allTags = Array.from(
@@ -110,8 +110,8 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
             <BookOpen className="w-10 h-10 text-primary/60 mx-auto mb-3 animate-pulse" />
             <p className="font-mono text-sm text-foreground/80 uppercase tracking-widest">
               {isEs
-                ? '// NO HAY TRANSMISIONES EN ESTA FRECUENCIA'
-                : '// NO TRANSMISSIONS RECORDED IN THIS FREQUENCY'}
+                ? '// NO HAY PUBLICACIONES EN ESTA CATEGORÍA'
+                : '// NO ARTICLES RECORDED IN THIS CATEGORY'}
             </p>
           </div>
         ) : (
@@ -168,7 +168,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                         href={`${basePath}/${featuredPost.slug}`}
                         className="inline-flex items-center gap-2 font-headline uppercase text-xs sm:text-sm tracking-widest px-5 py-2.5 bg-primary/10 border border-primary text-primary hover:bg-primary hover:text-black transition-all duration-300 font-bold group/btn"
                       >
-                        <span>{isEs ? 'Leer Transmisión Completa' : 'Read Transmission'}</span>
+                        <span>{isEs ? 'Leer Artículo Completo' : 'Read Full Article'}</span>
                         <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                       </a>
                     </div>
@@ -238,7 +238,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                             href={`${basePath}/${post.slug}`}
                             className="inline-flex items-center gap-1.5 text-xs font-headline uppercase tracking-wider text-primary hover:text-accent font-semibold transition-colors mt-3"
                           >
-                            <span>{isEs ? 'Acceder al reporte' : 'Open transmission'}</span>
+                            <span>{isEs ? 'Acceder al artículo' : 'Read article'}</span>
                             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                           </a>
                         </div>

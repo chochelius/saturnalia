@@ -245,7 +245,7 @@ export default function AdminDashboard() {
       const lnkList = await pb.collection('links').getFullList({ sort: 'order', requestKey: null }).catch(() => []);
       setLinks(lnkList);
 
-      // 7. Blog / Transmisiones
+      // 7. Blog / Artículos
       const blogList = await pb.collection('blog_posts').getFullList({ sort: '-published_at,-order', requestKey: null }).catch(() => []);
       setBlogPosts(blogList);
     } catch (err: any) {
@@ -673,7 +673,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteBlogPost = async (id: string, title: string) => {
-    if (!window.confirm(`¿Seguro que deseas eliminar la transmisión/artículo "${title}"?`)) return;
+    if (!window.confirm(`¿Seguro que deseas eliminar el artículo "${title}"?`)) return;
     try {
       await pb.collection('blog_posts').delete(id);
       setBlogPosts(blogPosts.filter((b) => b.id !== id));
@@ -708,7 +708,7 @@ export default function AdminDashboard() {
               clearInterval(interval);
               setIsRebuilding(false);
               setRebuildStatus('success');
-              showNotification('success', '¡Transmisión estática actualizada y publicada con éxito!');
+              showNotification('success', '¡Sitio estático actualizado y publicado con éxito!');
             } else if (statusData.status === 'error') {
               clearInterval(interval);
               setIsRebuilding(false);
@@ -1017,7 +1017,7 @@ export default function AdminDashboard() {
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span>Blog / Transmisiones ({blogPosts.length})</span>
+            <span>Blog / Artículos ({blogPosts.length})</span>
           </button>
 
           <button
@@ -1057,7 +1057,7 @@ export default function AdminDashboard() {
               {/* Títulos en Inglés */}
               <div className="bg-[#080808] border border-primary/30 p-5 rounded-lg space-y-4">
                 <span className="text-xs uppercase font-bold text-primary/80 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary" /> Transmisión en Inglés (EN)
+                  <span className="w-2 h-2 rounded-full bg-primary" /> Contenido en Inglés (EN)
                 </span>
                 <div>
                   <label className="block text-xs uppercase text-muted-foreground mb-1">Título Hero (EN)</label>
@@ -1082,7 +1082,7 @@ export default function AdminDashboard() {
               {/* Títulos en Español */}
               <div className="bg-[#080808] border border-primary/30 p-5 rounded-lg space-y-4">
                 <span className="text-xs uppercase font-bold text-primary/80 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary" /> Transmisión en Español (ES)
+                  <span className="w-2 h-2 rounded-full bg-primary" /> Contenido en Español (ES)
                 </span>
                 <div>
                   <label className="block text-xs uppercase text-muted-foreground mb-1">Título Hero (ES)</label>
@@ -1108,7 +1108,7 @@ export default function AdminDashboard() {
             {/* Video de YouTube */}
             <div className="bg-[#080808] border border-primary/30 p-5 rounded-lg space-y-4">
               <span className="text-xs uppercase font-bold text-primary/80 flex items-center gap-2">
-                <Video className="w-4 h-4 text-primary" /> Transmisión de Video Destacado
+                <Video className="w-4 h-4 text-primary" /> Video Destacado
               </span>
               <div>
                 <label className="block text-xs uppercase text-muted-foreground mb-1">
@@ -2229,7 +2229,7 @@ export default function AdminDashboard() {
                           type="text"
                           value={editingGalleryItem.title || ''}
                           onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, title: e.target.value })}
-                          placeholder="e.g. Void Transmission"
+                          placeholder="e.g. Dark Atmosphere"
                           className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary"
                         />
                       </div>
@@ -2239,7 +2239,7 @@ export default function AdminDashboard() {
                           type="text"
                           value={editingGalleryItem.title_es || ''}
                           onChange={(e) => setEditingGalleryItem({ ...editingGalleryItem, title_es: e.target.value })}
-                          placeholder="ej. Transmisión del Vacío"
+                          placeholder="ej. Atmósfera Oscura"
                           className="w-full bg-[#111] border border-primary/30 rounded px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary"
                         />
                       </div>
@@ -2711,7 +2711,7 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] uppercase text-muted-foreground mb-1">Botón Transmitir</label>
+                    <label className="block text-[11px] uppercase text-muted-foreground mb-1">Botón Enviar</label>
                     <input
                       type="text"
                       value={siteTexts.contact_submit_en}
@@ -2742,7 +2742,7 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] uppercase text-muted-foreground mb-1">Botón Transmitir</label>
+                    <label className="block text-[11px] uppercase text-muted-foreground mb-1">Botón Enviar</label>
                     <input
                       type="text"
                       value={siteTexts.contact_submit_es}
@@ -2757,13 +2757,13 @@ export default function AdminDashboard() {
         )}
 
         {/* ========================================================= */}
-        {/* TAB 8: BLOG / TRANSMISIONES */}
+        {/* TAB 8: BLOG / ARTÍCULOS */}
         {/* ========================================================= */}
         {activeTab === 'blog' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-primary/20">
               <div>
-                <h2 className="text-base font-bold text-primary uppercase">Blog / Transmisiones ({blogPosts.length})</h2>
+                <h2 className="text-base font-bold text-primary uppercase">Blog / Artículos ({blogPosts.length})</h2>
                 <p className="text-xs text-muted-foreground">Publica noticias, bitácora de sintetizadores, manifiestos y reportes sonoros.</p>
               </div>
               <button
@@ -2787,7 +2787,7 @@ export default function AdminDashboard() {
                 className="flex items-center gap-2 px-4 py-2 bg-primary text-black font-semibold text-xs uppercase tracking-widest rounded hover:bg-primary/90 transition-all shadow-md shadow-primary/20"
               >
                 <Plus className="w-4 h-4" />
-                <span>Nueva Transmisión</span>
+                <span>Nuevo Artículo</span>
               </button>
             </div>
 
@@ -2872,7 +2872,7 @@ export default function AdminDashboard() {
                 <div className="bg-[#080808] border border-primary/50 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-6 shadow-2xl">
                   <div className="flex items-center justify-between pb-3 border-b border-primary/20">
                     <h3 className="text-base font-bold text-primary uppercase">
-                      {editingBlogPost.id ? 'Editar Transmisión' : 'Nueva Transmisión en Blog'}
+                      {editingBlogPost.id ? 'Editar Artículo' : 'Nuevo Artículo en Blog'}
                     </h3>
                     <button
                       onClick={() => setEditingBlogPost(null)}

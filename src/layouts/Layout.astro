@@ -10,7 +10,7 @@ interface Props {
 }
 
 const {
-  title = "Saturnalia999 - Official Transmission",
+  title = "Saturnalia999 - Official HomePage",
   description = "Official website of Saturnalia999, gothic solo experimental artist based in Chile. Music, discography, bio and contact.",
   lang = "en",
 } = Astro.props;
@@ -42,6 +42,9 @@ const {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content="https://f4.bcbits.com/img/a4169686274_2.jpg" />
+
+    {/* Preload brand logo for instant 0-lag rendering */}
+    <link rel="preload" href="/logo.png" as="image" type="image/png" />
 
     {/* Preload local Courier Prime font for instant rendering and 0 layout shift */}
     <link

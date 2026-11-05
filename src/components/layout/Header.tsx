@@ -89,6 +89,10 @@ export const Header = ({
             <img
               src="/logo.png"
               alt="Saturnalia999 Logo"
+              width={36}
+              height={36}
+              loading="eager"
+              decoding="async"
               className="w-full h-full object-contain"
             />
           </div>
@@ -179,6 +183,10 @@ export const Header = ({
                       <img
                         src="/logo.png"
                         alt="Saturnalia999 Logo"
+                        width={32}
+                        height={32}
+                        loading="eager"
+                        decoding="async"
                         className="w-full h-full object-contain"
                       />
                     </div>

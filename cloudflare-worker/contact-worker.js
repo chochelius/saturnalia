@@ -86,18 +86,18 @@ export default {
       const emailHtml = `
         <div style="background-color: #020202; color: #1ca1e5; font-family: monospace, sans-serif; padding: 24px; border: 1px solid #1ca1e5;">
           <h2 style="color: #67cdf7; text-transform: uppercase; letter-spacing: 2px; margin-top: 0;">
-            [SATURNALIA999] Nueva Transmisión Recibida
+            [SATURNALIA999] Nuevo Mensaje de Contacto
           </h2>
           <hr style="border: 0; border-top: 1px solid #157fc9; margin: 16px 0;" />
-          <p style="margin: 8px 0; font-size: 14px;"><strong>Alias / Remitente:</strong> ${escapeHtml(name)}</p>
-          <p style="margin: 8px 0; font-size: 14px;"><strong>Canal Seguro (Email):</strong> <a href="mailto:${escapeHtml(email)}" style="color: #33aaff;">${escapeHtml(email)}</a></p>
+          <p style="margin: 8px 0; font-size: 14px;"><strong>Nombre / Remitente:</strong> ${escapeHtml(name)}</p>
+          <p style="margin: 8px 0; font-size: 14px;"><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}" style="color: #33aaff;">${escapeHtml(email)}</a></p>
           <p style="margin: 8px 0; font-size: 14px;"><strong>Fecha:</strong> ${new Date().toUTCString()}</p>
           <div style="background-color: #070707; border-left: 3px solid #1ca1e5; padding: 16px; margin-top: 16px; color: #e0f2fe; white-space: pre-wrap; font-size: 14px; line-height: 1.6;">
             ${escapeHtml(message)}
           </div>
           <hr style="border: 0; border-top: 1px solid #0f415b; margin: 24px 0 16px 0;" />
           <p style="font-size: 11px; color: #64748b; margin: 0; text-transform: uppercase;">
-            Transmisión automática generada desde https://saturnalia999.art/contact
+            Mensaje enviado desde https://saturnalia999.art/contact
           </p>
         </div>
       `;
@@ -109,10 +109,10 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: `Saturnalia999 Transmissions <${senderEmail}>`,
+          from: `Saturnalia999 Contact <${senderEmail}>`,
           to: [destinationEmail],
           reply_to: email,
-          subject: `[Saturnalia999] Nueva Transmisión de ${name}`,
+          subject: `[Saturnalia999] Nuevo Mensaje de ${name}`,
           html: emailHtml,
         }),
       });
@@ -130,7 +130,7 @@ export default {
 
       return new Response(JSON.stringify({
         success: true,
-        message: 'Transmisión recibida y reenviada con éxito.',
+        message: 'Mensaje recibido y enviado con éxito.',
         id: resendResult.id,
       }), {
         status: 200,

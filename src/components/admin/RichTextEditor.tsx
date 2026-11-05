@@ -12,7 +12,7 @@ interface RichTextEditorProps {
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
-  placeholder = 'Escribe aquí tu transmisión...',
+  placeholder = 'Escribe aquí tu artículo...',
   rows = 6,
   label,
 }) => {

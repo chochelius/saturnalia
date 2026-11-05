@@ -295,8 +295,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             <div className="p-3 bg-[#020202] border border-primary/40 text-xs text-center">
               <p className="text-muted-foreground mb-2">
                 {isEs
-                  ? "Disponible para transmisión completa en streaming:"
-                  : "Available for full streaming transmission:"}
+                  ? "Disponible para escuchar en streaming:"
+                  : "Available on streaming platforms:"}
               </p>
               <a
                 href={streamUrl || "https://saturnalia999.bandcamp.com/releases"}

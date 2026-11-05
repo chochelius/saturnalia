@@ -16,6 +16,7 @@ pocketbase.exe
 bandcamp/
 *.tar.gz
 *.zip
+public/logo-original.png
 
 # Entorno y variables secretas
 .env
