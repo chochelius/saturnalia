@@ -10,7 +10,7 @@ interface Props {
 const { title, paragraphs } = Astro.props;
 ---
 
-<section id="bio" class="py-20 sm:py-32 bg-[#060606]/95 backdrop-blur-md border-y border-primary/30 shadow-xl shadow-black/80">
+<section id="bio" class="py-16 sm:py-24">
   <div class="container mx-auto px-4 text-center">
     <GlitchText
       text={title}
@@ -21,7 +21,7 @@ const { title, paragraphs } = Astro.props;
     <div class="max-w-3xl mx-auto space-y-6">
       {paragraphs.map((paragraph) => (
         <p
-          class="text-lg sm:text-xl text-foreground/90 leading-relaxed tracking-wider font-body selection:bg-primary selection:text-black"
+          class="text-lg sm:text-xl text-foreground/90 leading-relaxed tracking-wider font-body selection:bg-primary selection:text-black [text-shadow:_0_2px_12px_rgb(0_0_0_/_95%)]"
           set:html={paragraph}
         />
       ))}
