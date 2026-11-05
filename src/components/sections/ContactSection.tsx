@@ -129,7 +129,7 @@ export const ContactSection = ({
           as="h2"
           className="text-4xl md:text-5xl font-bold text-center mb-12 text-glow text-primary"
         />
-        <Card className="max-w-2xl mx-auto bg-[#020202]/90 border border-primary/30 backdrop-blur-sm shadow-lg shadow-primary/10 rounded-none">
+        <Card className="max-w-2xl mx-auto bg-[#060606]/96 border border-primary/40 backdrop-blur-md shadow-2xl shadow-black/90 rounded-none">
           <CardHeader>
             <p className="text-muted-foreground text-center text-lg uppercase tracking-wider">
               {translations.description}

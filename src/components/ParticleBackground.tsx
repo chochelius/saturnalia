@@ -47,12 +47,16 @@ class Particle {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "rgba(103, 205, 247, 0.75)";
-    ctx.shadowBlur = 6;
-    ctx.shadowColor = "rgba(28, 161, 229, 0.85)";
+    // Halo glow (fast rasterization without software shadowBlur)
+    ctx.fillStyle = "rgba(28, 161, 229, 0.2)";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, Math.max(0.1, this.size * 2), 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bright core
+    ctx.fillStyle = "rgba(103, 205, 247, 0.85)";
     ctx.beginPath();
     ctx.arc(this.x, this.y, Math.max(0.1, this.size), 0, Math.PI * 2);
-    ctx.closePath();
     ctx.fill();
   }
 }
@@ -69,8 +73,9 @@ export const ParticleBackground = () => {
 
     let animationFrameId: number;
     let particles: Particle[] = [];
-    const particleCount = 55;
-    const maxConnectionDistance = 115;
+    const particleCount = 32;
+    const maxConnectionDistance = 110;
+    let isVisible = true;
 
     const setCanvasSize = () => {
       const container = canvas.parentElement;
@@ -89,12 +94,13 @@ export const ParticleBackground = () => {
     };
 
     const animate = () => {
+      if (!isVisible) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const width = canvas.width;
       const height = canvas.height;
 
       // Draw dynamic web filaments between close particles
-      ctx.shadowBlur = 0;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -122,6 +128,22 @@ export const ParticleBackground = () => {
       animationFrameId = requestAnimationFrame(animate);
     };
 
+    // Pause animation when scrolled out of view to preserve 100% CPU/GPU performance
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if (isVisible && !wasVisible) {
+          cancelAnimationFrame(animationFrameId);
+          animate();
+        } else if (!isVisible && wasVisible) {
+          cancelAnimationFrame(animationFrameId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(canvas);
+
     init();
     animate();
 
@@ -136,9 +158,10 @@ export const ParticleBackground = () => {
     window.addEventListener("resize", handleResize);
 
     return () => {
+      observer.disconnect();
+      cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimeout);
-      cancelAnimationFrame(animationFrameId);
     };
   }, []);
 

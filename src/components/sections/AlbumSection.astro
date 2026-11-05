@@ -23,9 +23,9 @@ const { title, buyNowText, albums, tracks = [], lang = 'en' } = Astro.props;
     />
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {albums.map((album) => (
-        <div class="bg-[#020202]/90 border border-primary/30 backdrop-blur-sm overflow-hidden group transform hover:-translate-y-1 hover:border-primary transition-all duration-300 rounded-none shadow-lg shadow-primary/10 flex flex-col justify-between">
+        <div class="bg-[#060606]/96 border border-primary/40 backdrop-blur-md overflow-hidden group transform hover:-translate-y-1 hover:border-primary transition-all duration-300 rounded-none shadow-xl shadow-black/90 flex flex-col justify-between">
           <div>
-            <div class="aspect-square overflow-hidden border-b border-primary/30 bg-black relative">
+            <div class="aspect-square overflow-hidden border-b border-primary/40 bg-black relative">
               <img
                 src={album.cover}
                 alt={album.title}
@@ -59,7 +59,7 @@ const { title, buyNowText, albums, tracks = [], lang = 'en' } = Astro.props;
             </div>
           </div>
 
-          <div class="flex justify-between items-center border-t border-primary/20 p-6 pt-4 bg-[#020202]">
+          <div class="flex justify-between items-center border-t border-primary/30 p-6 pt-4 bg-[#050505]">
             <p class="text-xl font-cover text-ghost-glow font-bold">
               ${album.price.toFixed(2)}
             </p>

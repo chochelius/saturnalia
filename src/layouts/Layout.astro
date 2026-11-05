@@ -62,7 +62,9 @@ const {
   </head>
   <body class="bg-[#020202] text-foreground relative min-h-screen pb-24 md:pb-28">
     <AmbientWebs />
-    <slot />
+    <div class="relative z-10 min-h-screen flex flex-col justify-between">
+      <slot />
+    </div>
     <StickyBottomPlayer client:load lang={lang} />
   </body>
 </html>
