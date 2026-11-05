@@ -387,7 +387,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
         contentEs: r.content_es || r.contentEs || r.content_en || '',
         coverImage: r.cover_image
           ? pb.files.getURL(r, r.cover_image)
-          : (r.coverImage || '/logo.jpg'),
+          : (r.coverImage || '/logo.png'),
         coverFile: r.cover_image || '',
         tags: Array.isArray(r.tags)
           ? r.tags

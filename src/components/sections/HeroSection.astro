@@ -41,15 +41,15 @@ const formattedVideoUrl = getEmbedUrl(videoUrl);
 
   <div class="relative z-10 flex flex-col items-center justify-center p-4 w-full max-w-4xl">
     {/* Sigilo / Logotipo Central */}
-    <div class="mb-6 relative group">
-      <div class="w-20 h-20 sm:w-24 sm:h-24 p-1 border-2 border-primary/60 bg-black/80 shadow-[0_0_20px_rgba(28,161,229,0.5)] group-hover:shadow-[0_0_30px_rgba(28,161,229,0.8)] transition-all duration-500 overflow-hidden">
+    <div class="mb-6 relative group flex items-center justify-center">
+      <div class="w-20 h-20 sm:w-24 sm:h-24 p-1.5 rounded-full border-2 border-primary/60 bg-black/80 shadow-[0_0_20px_rgba(28,161,229,0.5)] group-hover:shadow-[0_0_30px_rgba(28,161,229,0.8)] group-hover:border-primary transition-all duration-500 overflow-hidden flex items-center justify-center">
         <img
-          src="/logo.jpg"
+          src="/logo.png"
           alt="Saturnalia999 Sigil"
-          class="w-full h-full object-cover filter contrast-125"
+          class="w-full h-full object-contain filter contrast-125 transition-transform duration-500 group-hover:scale-105"
         />
       </div>
-      <div class="absolute -inset-1 border border-primary/20 pointer-events-none scale-110"></div>
+      <div class="absolute -inset-1 rounded-full border border-primary/20 pointer-events-none scale-110"></div>
     </div>
 
     <GlitchText

@@ -2802,7 +2802,7 @@ export default function AdminDashboard() {
                 {blogPosts.map((post) => {
                   const coverUrl = post.cover_image
                     ? pb.files.getURL(post, post.cover_image)
-                    : (post.coverImage || '/logo.jpg');
+                    : (post.coverImage || '/logo.png');
                   return (
                     <div
                       key={post.id}

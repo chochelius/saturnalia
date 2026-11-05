@@ -85,11 +85,13 @@ export const Header = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex justify-between items-center gap-2 sm:gap-4">
         {/* Logo & Marca */}
         <a href={homeHref} onClick={() => setIsOpen(false)} className="z-10 flex items-center gap-2.5 sm:gap-3 shrink-0 group">
-          <img
-            src="/logo.jpg"
-            alt="Saturnalia999 Logo"
-            className="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-none border border-primary/40 group-hover:border-primary group-hover:shadow-[0_0_12px_rgba(28,161,229,0.7)] transition-all duration-300 shrink-0"
-          />
+          <div className="w-8 h-8 sm:w-9 sm:h-9 p-0.5 rounded-full border border-primary/40 group-hover:border-primary group-hover:shadow-[0_0_12px_rgba(28,161,229,0.7)] transition-all duration-300 shrink-0 overflow-hidden bg-black/60 flex items-center justify-center">
+            <img
+              src="/logo.png"
+              alt="Saturnalia999 Logo"
+              className="w-full h-full object-contain"
+            />
+          </div>
           <span className="text-xl sm:text-2xl font-headline font-bold text-glow text-primary uppercase tracking-widest block whitespace-nowrap">
             Saturnalia999
           </span>
@@ -173,11 +175,13 @@ export const Header = ({
               <div className="flex flex-col h-full">
                 <div className="flex justify-between items-center p-4 border-b border-b-primary/20 h-20">
                   <a href={homeHref} onClick={() => setIsOpen(false)} className="flex items-center gap-2.5">
-                    <img
-                      src="/logo.jpg"
-                      alt="Saturnalia999 Logo"
-                      className="w-7 h-7 object-cover border border-primary/40 shadow-sm"
-                    />
+                    <div className="w-8 h-8 p-0.5 rounded-full border border-primary/40 shrink-0 overflow-hidden bg-black/60 flex items-center justify-center">
+                      <img
+                        src="/logo.png"
+                        alt="Saturnalia999 Logo"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                     <span className="text-2xl font-headline text-glow text-primary uppercase block font-bold">
                       S999
                     </span>
